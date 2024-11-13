@@ -1,10 +1,10 @@
 # **Lan side project**
 
-!https://img.shields.io/github/license/s35241607/lan-side-project.svg
+<img src="https://img.shields.io/github/license/s35241607/lan-side-project.svg">
 
-!https://img.shields.io/github/issues/s35241607/lan-side-project.svg
+<img src="https://img.shields.io/github/issues/s35241607/lan-side-project.svg">
 
-!https://img.shields.io/github/issues-pr/s35241607/lan-side-project.svg
+<img src="https://img.shields.io/github/issues-pr/s35241607/lan-side-project.svg">
 
 這是一個採用 **前後端分離架構** 的開源專案，致力於解決 [問題描述]，提供高效、現代化的解決方案。
 
@@ -79,7 +79,7 @@
 1. Clone 儲存庫並進入目錄：
 
     ```bash
-    git clone <https://github.com/s35241607/lan-side-project.git>
+    git clone https://github.com/s35241607/lan-side-project.git
     cd lan-side-project/backend
 
     ```
@@ -118,7 +118,7 @@
 ## **專案結構**
 
 ```
-my-open-source-project/
+lan-side-project/
 ├── backend/               # 後端程式碼
 │   ├── Controllers/       # API 控制器
 │   ├── Models/            # 資料模型
