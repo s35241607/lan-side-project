@@ -1,10 +1,8 @@
 # **Lan side project**
 
-<img src="https://img.shields.io/github/license/s35241607/lan-side-project.svg">
-
-<img src="https://img.shields.io/github/issues/s35241607/lan-side-project.svg">
-
-<img src="https://img.shields.io/github/issues-pr/s35241607/lan-side-project.svg">
+![license](https://img.shields.io/github/license/s35241607/lan-side-project.svg)
+![issues](https://img.shields.io/github/issues/s35241607/lan-side-project.svg)
+![issues-pr](https://img.shields.io/github/issues-pr/s35241607/lan-side-project.svg)
 
 這是一個採用 **前後端分離架構** 的開源專案，致力於解決 [問題描述]，提供高效、現代化的解決方案。
 
@@ -16,13 +14,13 @@
 
 ## **目錄**
 
--   [功能](https://www.notion.so/12d3308f739980a39c6efb62015aba0c?pvs=21)
--   [技術架構](https://www.notion.so/12d3308f739980a39c6efb62015aba0c?pvs=21)
--   [安裝與使用](https://www.notion.so/12d3308f739980a39c6efb62015aba0c?pvs=21)
--   [貢獻指南](https://www.notion.so/12d3308f739980a39c6efb62015aba0c?pvs=21)
--   [專案結構](https://www.notion.so/12d3308f739980a39c6efb62015aba0c?pvs=21)
--   [未來規劃](https://www.notion.so/12d3308f739980a39c6efb62015aba0c?pvs=21)
--   [授權](https://www.notion.so/12d3308f739980a39c6efb62015aba0c?pvs=21)
+-   [功能](#功能)
+-   [技術架構](#技術架構)
+-   [安裝與使用](#安裝與使用)
+-   [貢獻指南](#貢獻指南)
+-   [專案結構](#專案結構)
+-   [未來規劃](#未來規劃)
+-   [授權](#授權)
 
 ---
 
