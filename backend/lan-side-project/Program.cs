@@ -1,4 +1,7 @@
 
+using lan_side_project.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace lan_side_project
 {
     public class Program
@@ -6,6 +9,10 @@ namespace lan_side_project
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // °t¸m EF Core »P PostgreSQL
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Add services to the container.
             builder.Services.AddAuthorization();
