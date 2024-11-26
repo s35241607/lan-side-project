@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  lan-side-project:
+    image: ${DOCKER_REGISTRY-}lansideproject
+    build:
+      context: lan-side-project
+      dockerfile: Dockerfile

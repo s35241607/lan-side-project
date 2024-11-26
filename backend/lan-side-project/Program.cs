@@ -1,6 +1,9 @@
 
 using lan_side_project.Data;
+using lan_side_project.Middlewares;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Events;
 
 namespace lan_side_project
 {
@@ -9,6 +12,10 @@ namespace lan_side_project
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // 從 appsettings.json 讀取 Serilog 設定
+            builder.Host.UseSerilog((context, services, configuration) =>
+                configuration.ReadFrom.Configuration(context.Configuration));
 
             // 配置 EF Core 與 PostgreSQL
             builder.Services.AddDbContext<AppDbContext>(options =>
@@ -22,6 +29,8 @@ namespace lan_side_project
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
+
+            app.UseSerilogHttpSessionsLogging(HttpSessionInfoToLog.All);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
