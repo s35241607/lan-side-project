@@ -6,6 +6,8 @@
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
 
-        public ICollection<Permission> Permissions { get; set; } = [];
+        public List<User> Users { get; } = [];
+
+        public List<Permission> Permissions { get; } = [];
     }
 }
