@@ -1,6 +1,5 @@
-﻿namespace lan_side_project.Utils
+﻿namespace lan_side_project.Utils;
+
+public class JwtUtils
 {
-    public class JwtUtils
-    {
-    }
 }

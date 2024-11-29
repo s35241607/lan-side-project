@@ -1,13 +1,12 @@
-﻿namespace lan_side_project.Models
+﻿namespace lan_side_project.Models;
+
+public class Role : AuditBase
 {
-    public class Role : AuditBase
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = null!;
-        public string? Description { get; set; }
+    public int Id { get; set; }
+    public string Name { get; set; } = null!;
+    public string? Description { get; set; }
 
-        public List<User> Users { get; } = [];
+    public List<User> Users { get; } = [];
 
-        public List<Permission> Permissions { get; } = [];
-    }
+    public List<Permission> Permissions { get; } = [];
 }
