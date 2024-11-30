@@ -15,6 +15,15 @@ public class UserRepository(AppDbContext db)
             .FirstOrDefaultAsync(u => u.Username == username);
     }
 
+    // 根據 Username Or Email 查詢使用者
+    public async Task<User?> GetByUsernameOrEmailAsync(string login)
+    {
+        return await db.Users
+            .AsNoTracking()
+            .Where(u => EF.Functions.Like(u.Username, login) || EF.Functions.Like(u.Email, login))
+            .FirstOrDefaultAsync();
+    }
+
     // 根據 ID 查詢使用者
     public async Task<User?> GetUserByIdAsync(int id)
     {
@@ -79,5 +88,4 @@ public class UserRepository(AppDbContext db)
             .Take(pageSize)
             .ToListAsync();
     }
-
 }

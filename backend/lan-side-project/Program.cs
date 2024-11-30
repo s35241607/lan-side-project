@@ -1,8 +1,12 @@
 ﻿
 using lan_side_project.Data;
 using lan_side_project.Middlewares;
+using lan_side_project.Repositories;
+using lan_side_project.Services;
+using lan_side_project.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Text;
@@ -27,6 +31,19 @@ public class Program
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            // 註冊 Repository
+            builder.Services.AddScoped<UserRepository>();
+
+            // 註冊 Service
+            builder.Services.AddScoped<AuthService>();
+
+            // 註冊 Utils
+            builder.Services.AddSingleton<JwtUtils>();
+
+
+
+            // Add services to the container.
+            builder.Services.AddAuthorization();
             builder.Services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -47,7 +64,6 @@ public class Program
 
                         // 通常不太需要驗證 Audience
                         ValidateAudience = false,
-                        //ValidAudience = "JwtAuthDemo", // 不驗證就不需要填寫
 
                         // 一般我們都會驗證 Token 的有效期間
                         ValidateLifetime = true,
@@ -63,9 +79,6 @@ public class Program
                     };
                 });
 
-
-            // Add services to the container.
-            builder.Services.AddAuthorization();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -86,6 +99,8 @@ public class Program
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
+
+            app.MapControllers();
 
             app.Run();
         }
