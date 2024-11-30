@@ -10,7 +10,7 @@ public class JwtUtils(IConfiguration configuration)
     public string GenerateToken(string userName, string email, int expireMinutes = 30)
     {
         var issuer = configuration.GetValue<string>("JwtSettings:Issuer");
-        var signKey = configuration.GetValue<string>("JwtSettings:SignKey");
+        var secretKey = configuration.GetValue<string>("JwtSettings:SecretKey");
 
         // Configuring "Claims" to your JWT Token
         var claims = new List<Claim>
@@ -39,7 +39,7 @@ public class JwtUtils(IConfiguration configuration)
         var userClaimsIdentity = new ClaimsIdentity(claims);
 
         // Create a SymmetricSecurityKey for JWT Token signatures
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signKey));
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
 
         // HmacSha256 MUST be larger than 128 bits, so the key can't be too short. At least 16 and more characters.
         // https://stackoverflow.com/questions/47279947/idx10603-the-algorithm-hs256-requires-the-securitykey-keysize-to-be-greater

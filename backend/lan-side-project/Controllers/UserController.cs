@@ -1,12 +1,12 @@
-﻿using lan_side_project.Services;
-using Microsoft.AspNetCore.Identity.Data;
+﻿using lan_side_project.DTOs.Requests.User;
+using lan_side_project.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace lan_side_project.Controllers;
 
 [ApiController]
-[Route("api/v1/users")]
-public class UserController(UserService userService) : ControllerBase
+[Route("api/v1/auth")]
+public class AuthController(AuthService authService) : ControllerBase
 {
     [HttpPost("register")]
     public async Task<IActionResult> RegisterAsync(RegisterRequest registerRequest)
@@ -33,7 +33,7 @@ public class UserController(UserService userService) : ControllerBase
     }
 
     [HttpPost("change-password")]
-    public async Task<IActionResult> ChangePasswordAsync()
+    public async Task<IActionResult> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
     {
         return Ok();
     }
