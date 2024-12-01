@@ -87,6 +87,9 @@ public class Program
 
             var app = builder.Build();
 
+            // 註冊 ExceptionHandlingMiddleware
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
+
             app.UseSerilogHttpSessionsLogging(HttpSessionInfoToLog.All);
 
             // Configure the HTTP request pipeline.
