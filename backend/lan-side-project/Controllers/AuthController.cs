@@ -1,4 +1,5 @@
-﻿using lan_side_project.DTOs.Requests.User;
+﻿using lan_side_project.DTOs.Reponses;
+using lan_side_project.DTOs.Requests.User;
 using lan_side_project.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,13 +12,25 @@ public class AuthController(AuthService authService) : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> RegisterAsync(RegisterRequest registerRequest)
     {
-        return Ok();
+        var result = await authService.RegisterAsync(registerRequest);
+
+        return result.IsError switch
+        {
+            true => BadRequest(result.Errors),
+            _ => Ok(result)
+        };
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> LoginAsync(LoginRequest loginRequest)
+    public async Task<ActionResult<LoginResponse>> LoginAsync(LoginRequest loginRequest)
     {
-        return Ok();
+        var result = await authService.LoginAsync(loginRequest);
+
+        return result.IsError switch
+        {
+            true => BadRequest(result.Errors),
+            _ => Ok(result)
+        };
     }
 
     [HttpPost("forgot-password")]

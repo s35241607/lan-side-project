@@ -15,6 +15,14 @@ public class UserRepository(AppDbContext db)
             .FirstOrDefaultAsync(u => u.Username == username);
     }
 
+    // 根據 Email 查詢使用者
+    public async Task<User?> GetUserByEmailAsync(string email)
+    {
+        return await db.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Email == email);
+    }
+
     // 根據 Username Or Email 查詢使用者
     public async Task<User?> GetByUsernameOrEmailAsync(string login)
     {
