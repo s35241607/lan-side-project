@@ -10,14 +10,14 @@ namespace lan_side_project.Controllers;
 public class AuthController(AuthService authService) : ControllerBase
 {
     [HttpPost("register")]
-    public async Task<IActionResult> RegisterAsync(RegisterRequest registerRequest)
+    public async Task<ActionResult<LoginResponse>> RegisterAsync(RegisterRequest registerRequest)
     {
         var result = await authService.RegisterAsync(registerRequest);
 
         return result.IsError switch
         {
-            true => BadRequest(result.Errors),
-            _ => Ok(result)
+            true => BadRequest(result.FirstError),
+            _ => Ok(result.Value)
         };
     }
 
@@ -28,8 +28,8 @@ public class AuthController(AuthService authService) : ControllerBase
 
         return result.IsError switch
         {
-            true => BadRequest(result.Errors),
-            _ => Ok(result)
+            true => BadRequest(result.FirstError),
+            _ => Ok(result.Value)
         };
     }
 

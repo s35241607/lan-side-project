@@ -50,6 +50,8 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils)
             return Error.Conflict("EmailAlreadyExists", "A user with the same email already exists.");
         }
 
+        // TODO: 檢查信箱是否合法
+
         // 密碼加密
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerRequest.Password);
 
