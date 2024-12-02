@@ -5,6 +5,8 @@ using lan_side_project.Repositories;
 using lan_side_project.Services;
 using lan_side_project.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -82,7 +84,30 @@ public class Program
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddControllers();
+            // 註冊控制器並修改模型驗證失敗時的行為
+            builder.Services.AddControllers()
+                .ConfigureApiBehaviorOptions(options =>
+                {
+                    options.InvalidModelStateResponseFactory = context =>
+                    {
+                        var errors = context.ModelState
+                            .Where(m => m.Value?.Errors.Count > 0)
+                            .Select(m => new
+                            {
+                                Field = m.Key,
+                                Messages = m.Value?.Errors.Select(e => e.ErrorMessage).ToArray()
+                            });
+
+                        var errorResponse = new
+                        {
+                            Code = "ValidationError",
+                            Message = "Input validation failed.",
+                            Errors = errors
+                        };
+
+                        return new BadRequestObjectResult(errorResponse);
+                    };
+                });
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
