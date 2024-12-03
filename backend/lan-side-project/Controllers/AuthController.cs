@@ -7,18 +7,14 @@ namespace lan_side_project.Controllers;
 
 [ApiController]
 [Route("api/v1/auth")]
-public class AuthController(AuthService authService) : ControllerBase
+public class AuthController(AuthService authService) : BaseController
 {
     [HttpPost("register")]
     public async Task<ActionResult<LoginResponse>> RegisterAsync(RegisterRequest registerRequest)
     {
         var result = await authService.RegisterAsync(registerRequest);
 
-        return result.IsError switch
-        {
-            true => BadRequest(result.FirstError),
-            _ => Ok(result.Value)
-        };
+        return ErrorOrOkResponse(result);
     }
 
     [HttpPost("login")]
@@ -26,11 +22,7 @@ public class AuthController(AuthService authService) : ControllerBase
     {
         var result = await authService.LoginAsync(loginRequest);
 
-        return result.IsError switch
-        {
-            true => BadRequest(result.FirstError),
-            _ => Ok(result.Value)
-        };
+        return ErrorOrOkResponse(result);
     }
 
     [HttpPost("forgot-password")]
