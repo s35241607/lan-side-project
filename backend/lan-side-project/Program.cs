@@ -38,6 +38,7 @@ public class Program
 
             // 註冊 Service
             builder.Services.AddScoped<AuthService>();
+            builder.Services.AddScoped<UserService>();
 
             // 註冊 Utils
             builder.Services.AddSingleton<JwtUtils>();

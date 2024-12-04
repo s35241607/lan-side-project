@@ -1,5 +1,5 @@
 ﻿using ErrorOr;
-using lan_side_project.DTOs.Reponses;
+using lan_side_project.DTOs.Reponses.Auth;
 using lan_side_project.DTOs.Requests.User;
 using lan_side_project.Models;
 using lan_side_project.Repositories;
