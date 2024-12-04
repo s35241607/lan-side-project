@@ -18,18 +18,20 @@ const LoginPage = () => {
 
   return (
     <>
-      <Row justify="center" align="middle" className="h-100vh">
+      <Row justify="center" align="middle" className="h-screen">
         <Col xs={20} sm={16} md={12} xl={8}>
-          <form action="" className="login-form">
-            <div className="d-flex justify-center">登入</div>
+          <form
+            action=""
+            className="border border-slate-300 rounded-md bg-slate-100 p-6"
+          >
+            <div className="flex justify-center">登入</div>
 
-            <div className="my-3">
+            <div className="my-2">
               <label htmlFor="username">帳號</label>
               <Input
                 id="username"
                 type="text"
                 value={account.username}
-                className="w-100"
                 onChange={(e) =>
                   setAccount((prev: accountType) => ({
                     ...prev,
@@ -39,14 +41,13 @@ const LoginPage = () => {
               />
             </div>
 
-            <div className="my-3">
+            <div className="my-2">
               <label htmlFor="password">密碼</label>
-              <div className="password-container">
+              <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={account.password}
-                  className="w-100"
                   onChange={(e) =>
                     setAccount((prev: accountType) => ({
                       ...prev,
@@ -56,12 +57,12 @@ const LoginPage = () => {
                 />
                 <EyeOutlined
                   style={{ display: showPassword ? "block" : "none" }}
-                  className="password-icon"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer"
                   onClick={() => setShowPassword(!showPassword)}
                 />
                 <EyeInvisibleOutlined
                   style={{ display: showPassword ? "none" : "block" }}
-                  className="password-icon"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer"
                   onClick={() => setShowPassword(!showPassword)}
                 />
               </div>
@@ -69,7 +70,7 @@ const LoginPage = () => {
 
             <Button
               type="primary"
-              className="w-100 my-3"
+              className="w-full my-2"
               htmlType="button"
               onClick={loginHandler}
             >
