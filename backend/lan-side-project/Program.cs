@@ -1,82 +1,145 @@
-
+﻿
 using lan_side_project.Data;
 using lan_side_project.Middlewares;
+using lan_side_project.Repositories;
+using lan_side_project.Services;
+using lan_side_project.Utils;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using Serilog.Events;
+using System.Text;
 
-namespace lan_side_project
+namespace lan_side_project;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        Serilog.Debugging.SelfLog.Enable(Console.Out);
+        try
         {
-            Serilog.Debugging.SelfLog.Enable(Console.Out);
-            try
-            {
-                Log.Information("Starting web host");
-                var builder = WebApplication.CreateBuilder(args);
+            Log.Information("Starting web host");
+            var builder = WebApplication.CreateBuilder(args);
 
-                // �q appsettings.json Ū�� Serilog �]�w
-                builder.Host.UseSerilog((context, services, configuration) =>
-                    configuration.ReadFrom.Configuration(context.Configuration));
+            // 從 appsettings.json 讀取 Serilog 設定
+            builder.Host.UseSerilog((context, services, configuration) =>
+                configuration.ReadFrom.Configuration(context.Configuration));
 
-                // �t�m EF Core �P PostgreSQL
-                builder.Services.AddDbContext<AppDbContext>(options =>
-                    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+            // 配置 EF Core 與 PostgreSQL
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-                // Add services to the container.
-                builder.Services.AddAuthorization();
+            // 註冊 Repository
+            builder.Services.AddScoped<UserRepository>();
 
-                // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-                builder.Services.AddEndpointsApiExplorer();
-                builder.Services.AddSwaggerGen();
+            // 註冊 Service
+            builder.Services.AddScoped<AuthService>();
+            builder.Services.AddScoped<UserService>();
 
-                var app = builder.Build();
+            // 註冊 Utils
+            builder.Services.AddSingleton<JwtUtils>();
 
-                app.UseSerilogHttpSessionsLogging(HttpSessionInfoToLog.All);
 
-                // Configure the HTTP request pipeline.
-                if (app.Environment.IsDevelopment())
+
+            // Add services to the container.
+            builder.Services.AddAuthorization();
+            builder.Services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
                 {
-                    app.UseSwagger();
-                    app.UseSwaggerUI();
-                }
+                    // 當驗證失敗時，回應標頭會包含 WWW-Authenticate 標頭，這裡會顯示失敗的詳細錯誤原因
+                    options.IncludeErrorDetails = true; // 預設值為 true，有時會特別關閉
 
-                app.UseHttpsRedirection();
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        // 透過這項宣告，就可以從 "sub" 取值並設定給 User.Identity.Name
+                        NameClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
+                        // 透過這項宣告，就可以從 "roles" 取值，並可讓 [Authorize] 判斷角色
+                        RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
 
-                app.UseAuthorization();
+                        // 一般我們都會驗證 Issuer
+                        ValidateIssuer = true,
+                        ValidIssuer = builder.Configuration.GetValue<string>("JwtSettings:Issuer"),
 
-                var summaries = new[]
+                        // 通常不太需要驗證 Audience
+                        ValidateAudience = false,
+
+                        // 一般我們都會驗證 Token 的有效期間
+                        ValidateLifetime = true,
+
+                        // 如果 Token 中包含 key 才需要驗證，一般都只有簽章而已
+                        ValidateIssuerSigningKey = true,
+
+                        // "1234567890123456" 應該從 IConfiguration 取得
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("JwtSettings:SecretKey"))),
+
+                        //沒有設定的話預設為5分鐘，這會導致過期時間會再增加
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
+
+
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddEndpointsApiExplorer();
+            // 註冊控制器並修改模型驗證失敗時的行為
+            builder.Services.AddControllers()
+                .ConfigureApiBehaviorOptions(options =>
                 {
-                "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-            };
+                    options.InvalidModelStateResponseFactory = context =>
+                    {
+                        var errors = context.ModelState
+                            .Where(m => m.Value?.Errors.Count > 0)
+                            .Select(m => new
+                            {
+                                Field = m.Key,
+                                Messages = m.Value?.Errors.Select(e => e.ErrorMessage).ToArray()
+                            });
 
-                app.MapGet("/weatherforecast", (HttpContext httpContext) =>
-                {
-                    var forecast = Enumerable.Range(1, 5).Select(index =>
-                        new WeatherForecast
+                        var errorResponse = new
                         {
-                            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                            TemperatureC = Random.Shared.Next(-20, 55),
-                            Summary = summaries[Random.Shared.Next(summaries.Length)]
-                        })
-                        .ToArray();
-                    return forecast;
-                })
-                .WithName("GetWeatherForecast")
-                .WithOpenApi();
+                            Code = "ValidationError",
+                            Message = "Input validation failed.",
+                            Errors = errors
+                        };
 
-                app.Run();
-            }
-            catch (Exception ex)
+                        return new BadRequestObjectResult(errorResponse);
+                    };
+                });
+            builder.Services.AddSwaggerGen();
+
+            var app = builder.Build();
+
+            // 註冊 ExceptionHandlingMiddleware
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+            app.UseSerilogHttpSessionsLogging(HttpSessionInfoToLog.All);
+
+            // Configure the HTTP request pipeline.
+            if (app.Environment.IsDevelopment())
             {
-                Log.Fatal(ex, "Host terminated unexpectedly");
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
-            finally
-            {
-                Log.CloseAndFlush();
-            }
+
+            app.UseHttpsRedirection();
+
+            app.UseAuthorization();
+
+            app.MapControllers();
+
+            app.Run();
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "Host terminated unexpectedly");
+        }
+        finally
+        {
+            Log.CloseAndFlush();
         }
     }
 }
