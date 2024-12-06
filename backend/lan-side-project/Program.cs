@@ -4,6 +4,7 @@ using lan_side_project.Middlewares;
 using lan_side_project.Repositories;
 using lan_side_project.Services;
 using lan_side_project.Utils;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
@@ -53,6 +54,22 @@ public class Program
 
             // Add services to the container.
             builder.Services.AddAuthorization();
+
+            // 設定 Google OAuth 2.0 認證
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "Cookies"; // 使用 Cookie 儲存用戶會話
+                options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme; // 設定 Google 作為挑戰方案
+            })
+            .AddGoogle(options =>
+            {
+                options.ClientId = "YOUR_GOOGLE_CLIENT_ID"; // 你從 Google Developer Console 取得的 Client ID
+                options.ClientSecret = "YOUR_GOOGLE_CLIENT_SECRET"; // 你從 Google Developer Console 取得的 Client Secret
+                options.Scope.Add("email"); // 請求 email 權限
+                options.SaveTokens = true; // 儲存 token，這樣可以用來生成 JWT
+            });
+
+            // 配置 JWT 認證
             builder.Services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -145,6 +162,8 @@ public class Program
 
             //app.UseHttpsRedirection();
 
+            // 啟用身份驗證和授權
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
