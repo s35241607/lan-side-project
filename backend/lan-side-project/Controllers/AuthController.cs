@@ -1,6 +1,8 @@
 ﻿using lan_side_project.DTOs.Reponses.Auth;
 using lan_side_project.DTOs.Requests.User;
 using lan_side_project.Services;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
 namespace lan_side_project.Controllers;
@@ -13,7 +15,6 @@ public class AuthController(AuthService authService) : BaseController
     public async Task<ActionResult<LoginResponse>> RegisterAsync(RegisterRequest registerRequest)
     {
         var result = await authService.RegisterAsync(registerRequest);
-
         return ErrorOrOkResponse(result);
     }
 
@@ -21,7 +22,6 @@ public class AuthController(AuthService authService) : BaseController
     public async Task<ActionResult<LoginResponse>> LoginAsync(LoginRequest loginRequest)
     {
         var result = await authService.LoginAsync(loginRequest);
-
         return ErrorOrOkResponse(result);
     }
 
@@ -41,5 +41,13 @@ public class AuthController(AuthService authService) : BaseController
     public async Task<IActionResult> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
     {
         return Ok();
+    }
+
+    // Google 登入
+    [HttpPost("google/login")]
+    public async Task<ActionResult<LoginResponse>> GoogleLoginAsync([FromBody] string googleToken)
+    {
+        var result = await authService.GoogleLoginAsync(googleToken);
+        return ErrorOrOkResponse(result);
     }
 }
