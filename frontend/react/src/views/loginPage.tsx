@@ -1,19 +1,19 @@
 import { useState } from "react";
 import { Row, Col, Button, Input } from "antd";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
-import { accountType } from "../types/loginType";
+import { LoginRequest } from "../types/Api";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  const [account, setAccount] = useState<accountType>({
-    username: "",
+  const [account, setAccount] = useState<LoginRequest>({
+    login: "",
     password: "",
   });
 
   const loginHandler = (): void => {
     console.log("輸入的帳密", account);
-    setAccount({ username: "", password: "" });
+    setAccount({ login: "", password: "" });
   };
 
   return (
@@ -31,9 +31,9 @@ const LoginPage = () => {
               <Input
                 id="username"
                 type="text"
-                value={account.username}
+                value={account.login}
                 onChange={(e) =>
-                  setAccount((prev: accountType) => ({
+                  setAccount((prev: LoginRequest) => ({
                     ...prev,
                     username: e.target.value,
                   }))
@@ -49,7 +49,7 @@ const LoginPage = () => {
                   type={showPassword ? "text" : "password"}
                   value={account.password}
                   onChange={(e) =>
-                    setAccount((prev: accountType) => ({
+                    setAccount((prev: LoginRequest) => ({
                       ...prev,
                       password: e.target.value,
                     }))
