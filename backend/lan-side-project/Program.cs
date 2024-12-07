@@ -113,6 +113,18 @@ public class Program
 
             var app = builder.Build();
 
+            try
+            {
+                using var scope = app.Services.CreateScope();
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                dbContext.Database.Migrate();
+                Console.WriteLine("Database migration applied successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred during migration: {ex.Message}");
+            }
+
             // 註冊 ExceptionHandlingMiddleware
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
