@@ -44,7 +44,7 @@ const RegisterPage: React.FC = () => {
           className="border border-slate-300 rounded-md bg-slate-100 p-6"
         >
           <div className="flex justify-center font-bold text-2xl my-2">
-            註冊會員
+            會員註冊
           </div>
 
           <Form.Item
@@ -86,7 +86,7 @@ const RegisterPage: React.FC = () => {
             </Button>
           </Form.Item>
 
-          <Button type="primary" block onClick={() => navigate("/loginPage")}>
+          <Button block onClick={() => navigate("/loginPage")}>
             返回登入頁面
           </Button>
         </Form>
