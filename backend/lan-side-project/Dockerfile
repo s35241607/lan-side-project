@@ -1,44 +1,44 @@
-# °ò©ó .NET ASP.NET ¹B¦æ®É¬M¹³ÀÉ
+ï»¿# åŸºæ–¼ .NET ASP.NET é‹è¡Œæ™‚æ˜ åƒæª”
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 
-# ¦w¸Ë¥²­n¤u¨ã¥H¥Í¦¨ HTTPS ¾ÌÃÒ
+# å®‰è£å¿…è¦å·¥å…·ä»¥ç”Ÿæˆ HTTPS æ†‘è­‰
 RUN apt-get update && apt-get install -y curl && apt-get clean
 
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-# °ò©ó .NET SDK ¬M¹³ÀÉºc«ØÀ³¥Îµ{¦¡
+# åŸºæ–¼ .NET SDK æ˜ åƒæª”æ§‹å»ºæ‡‰ç”¨ç¨‹å¼
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
-# ³]©w¤u§@¥Ø¿ı
+# è¨­å®šå·¥ä½œç›®éŒ„
 WORKDIR /src
 
-# ½Æ»s csproj ¨ÃÁÙ­ì NuGet ®M¥ó
+# è¤‡è£½ csproj ä¸¦é‚„åŸ NuGet å¥—ä»¶
 COPY ["lan-side-project.csproj", "."]
 RUN dotnet restore "./lan-side-project.csproj"
 
-# ½Æ»s³Ñ¾lªº·½½X¨Ãºc«ØÀ³¥Îµ{¦¡
+# è¤‡è£½å‰©é¤˜çš„æºç¢¼ä¸¦æ§‹å»ºæ‡‰ç”¨ç¨‹å¼
 COPY . . 
 
-# °õ¦æ dotnet dev-certs ¨Ó³Ğ«Ø¨Ã«H¥ô HTTPS ¾ÌÃÒ
+# åŸ·è¡Œ dotnet dev-certs ä¾†å‰µå»ºä¸¦ä¿¡ä»» HTTPS æ†‘è­‰
 RUN dotnet dev-certs https --clean && \
     dotnet dev-certs https && \
     dotnet dev-certs https --trust
 
-# ³]©w½sÄ¶ªº¥Ø¿ı¨Ã°õ¦æ build
+# è¨­å®šç·¨è­¯çš„ç›®éŒ„ä¸¦åŸ·è¡Œ build
 RUN dotnet build "./lan-side-project.csproj" -c Release -o /app/build
 
-# µo§GÀ³¥Îµ{¦¡
+# ç™¼ä½ˆæ‡‰ç”¨ç¨‹å¼
 FROM build AS publish
 RUN dotnet publish "./lan-side-project.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-# °ò©ó ASP.NET ¹B¦æ®Éªº³Ì²×¬M¹³
+# åŸºæ–¼ ASP.NET é‹è¡Œæ™‚çš„æœ€çµ‚æ˜ åƒ
 FROM base AS final
 WORKDIR /app
 
-# ½Æ»s¤wµo§GªºÀ³¥Îµ{¦¡
+# è¤‡è£½å·²ç™¼ä½ˆçš„æ‡‰ç”¨ç¨‹å¼
 COPY --from=publish /app/publish .
 
-# ³]©w®e¾¹±Ò°Êªº¤J¤fÂI
+# è¨­å®šå®¹å™¨å•Ÿå‹•çš„å…¥å£é»
 ENTRYPOINT ["dotnet", "lan-side-project.dll"]

@@ -19,11 +19,17 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        Serilog.Debugging.SelfLog.Enable(Console.Out);
+        // 如果需要看 serilog 的 log 在開啟
+        //Serilog.Debugging.SelfLog.Enable(Console.Out);
         try
         {
             Log.Information("Starting web host");
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Configuration
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
 
             // 從 appsettings.json 讀取 Serilog 設定
             builder.Host.UseSerilog((context, services, configuration) =>
