@@ -4,6 +4,7 @@ using lan_side_project.Services;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace lan_side_project.Controllers;
 
@@ -37,6 +38,7 @@ public class AuthController(AuthService authService) : BaseController
         return Ok();
     }
 
+    [Authorize]
     [HttpPost("change-password")]
     public async Task<IActionResult> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
     {

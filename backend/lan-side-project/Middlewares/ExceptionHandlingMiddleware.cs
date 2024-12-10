@@ -1,5 +1,10 @@
-﻿using Serilog.Extensions.Hosting;
+﻿using ErrorOr;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
+using Serilog.Extensions.Hosting;
 using System.Net;
+using System.Security.Authentication;
 
 namespace lan_side_project.Middlewares;
 
@@ -26,18 +31,19 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
     private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
-
-        // 將 request Id 加入 HTTP 回應的標頭中
-        context.Response.Headers.Append("X-Request-Id", context.TraceIdentifier);
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
         var errorResponse = new
         {
+            code = "INTERNAL_SERVER_ERROR",
             message = "An unexpected error occurred. Please try again later.",
-            details = exception.Message
+            details = exception?.Message ?? "No further details available."
         };
 
+        // 記錄錯誤訊息
+        context.Response.Headers.Append("X-Request-Id", context.TraceIdentifier);
+
+        // 使用 WriteAsJsonAsync 來正確寫入錯誤訊息
         await context.Response.WriteAsJsonAsync(errorResponse);
     }
 }

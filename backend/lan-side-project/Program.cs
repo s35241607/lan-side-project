@@ -33,7 +33,7 @@ public class Program
                 .AddEnvironmentVariables();
 
             // 從 appsettings.json 讀取 Serilog 設定
-            builder.Host.UseSerilog((context, services, configuration) =>
+           builder.Host.UseSerilog((context, services, configuration) =>
                 configuration.ReadFrom.Configuration(context.Configuration));
 
             // 配置 EF Core 與 PostgreSQL
@@ -63,8 +63,8 @@ public class Program
             })
             .AddGoogle(options =>
             {
-                options.ClientId = "YOUR_GOOGLE_CLIENT_ID"; // 你從 Google Developer Console 取得的 Client ID
-                options.ClientSecret = "YOUR_GOOGLE_CLIENT_SECRET"; // 你從 Google Developer Console 取得的 Client Secret
+                options.ClientId = builder.Configuration["GOOGLE_CLIENT_ID"] ?? "";
+                options.ClientSecret = builder.Configuration["GOOGLE_SECRET_KEY"] ?? "";
                 options.Scope.Add("email"); // 請求 email 權限
                 options.SaveTokens = true; // 儲存 token，這樣可以用來生成 JWT
             });
@@ -148,10 +148,12 @@ public class Program
                 Console.WriteLine($"An error occurred during migration: {ex.Message}");
             }
 
+            
+            app.UseSerilogHttpSessionsLogging(HttpSessionInfoToLog.All);
+            
             // 註冊 ExceptionHandlingMiddleware
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-            app.UseSerilogHttpSessionsLogging(HttpSessionInfoToLog.All);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
