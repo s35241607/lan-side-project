@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Form, Input, Button, message } from "antd";
+import { MailOutlined } from "@ant-design/icons";
 import { LoginProps } from "../types/props";
 
-// 這頁要有回到上衣頁的按鈕
 const ForgotPassword: React.FC<LoginProps> = ({ setShowForgot }) => {
   const [form] = Form.useForm();
 
@@ -15,10 +15,10 @@ const ForgotPassword: React.FC<LoginProps> = ({ setShowForgot }) => {
     }
   }, [forgetEmail]);
 
-  const onFinish = (values: string) => {
-    setForgetEmail(values);
-    console.log("您輸入的email為", values);
-    message.success("輸入email成功");
+  const onFinish = (values: { email: string }) => {
+    setForgetEmail(values.email);
+    console.log("您輸入的email為", values.email);
+    message.success("寄信至email成功");
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -37,23 +37,28 @@ const ForgotPassword: React.FC<LoginProps> = ({ setShowForgot }) => {
             initialValues={{ remember: true }}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
-            hideRequiredMark={true}
+            requiredMark={false}
             className="border border-slate-300 rounded-md bg-slate-100 p-6"
           >
-            <div className="flex justify-center text-xl mb-4">忘記密碼?</div>
+            <div className="flex justify-center text-2xl mb-4 font-bold">
+              忘記密碼?
+            </div>
 
             <Form.Item
               // label="Email"
-              name="Email"
+              name="email"
               rules={[
                 { required: true, message: "請輸入正確的Email" },
-                { min: 3, message: "Email格式要正確！" },
+                { type: "email", message: "Email格式要正確！" },
               ]}
             >
-              <Input placeholder="請輸入帳戶的Email" />
+              <Input
+                placeholder="請輸入帳戶的Email"
+                prefix={<MailOutlined />}
+              />
             </Form.Item>
 
-            <Form.Item className="">
+            <Form.Item>
               <Button type="primary" htmlType="submit" block>
                 發送
               </Button>
