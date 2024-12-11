@@ -1,10 +1,14 @@
 ﻿using lan_side_project.DTOs.Reponses.Auth;
-using lan_side_project.DTOs.Requests.User;
 using lan_side_project.Services;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+using System.Net.Http;
+using Google.Apis.Auth;
+using lan_side_project.DTOs.Requests.Auth;
 
 namespace lan_side_project.Controllers;
 
@@ -12,6 +16,11 @@ namespace lan_side_project.Controllers;
 [Route("api/v1/auth")]
 public class AuthController(AuthService authService) : BaseController
 {
+    /// <summary>
+    /// 註冊
+    /// </summary>
+    /// <param name="registerRequest"></param>
+    /// <returns></returns>
     [HttpPost("register")]
     public async Task<ActionResult<LoginResponse>> RegisterAsync(RegisterRequest registerRequest)
     {
@@ -19,6 +28,11 @@ public class AuthController(AuthService authService) : BaseController
         return ErrorOrOkResponse(result);
     }
 
+    /// <summary>
+    /// 一般登入
+    /// </summary>
+    /// <param name="loginRequest"></param>
+    /// <returns></returns>
     [HttpPost("login")]
     public async Task<ActionResult<LoginResponse>> LoginAsync(LoginRequest loginRequest)
     {
@@ -26,30 +40,52 @@ public class AuthController(AuthService authService) : BaseController
         return ErrorOrOkResponse(result);
     }
 
+    /// <summary>
+    /// 使用 Google 帳號登入
+    /// </summary>
+    /// <param name="googleToken"></param>
+    /// <returns></returns>
+    [HttpPost("google-login")]
+    public async Task<ActionResult<LoginResponse>> GoogleLoginAsync(GoogleLoginRequest request)
+    {
+        // 驗證 Google ID Token
+        var payload = await GoogleJsonWebSignature.ValidateAsync(request.Token);
+
+        //var result = await authService.GoogleLoginAsync(accessToken);
+        return Ok();
+    }
+
+    /// <summary>
+    /// 忘記密碼
+    /// </summary>
+    /// <param name="forgotPasswordRequest"></param>
+    /// <returns></returns>
     [HttpPost("forgot-password")]
     public async Task<IActionResult> ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest)
     {
         return Ok();
     }
 
+    /// <summary>
+    /// 重製密碼
+    /// </summary>
+    /// <param name="resetPasswordRequest"></param>
+    /// <returns></returns>
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
     {
         return Ok();
     }
 
+    /// <summary>
+    /// 更改密碼
+    /// </summary>
+    /// <param name="changePasswordRequest"></param>
+    /// <returns></returns>
     [Authorize]
     [HttpPost("change-password")]
     public async Task<IActionResult> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
     {
         return Ok();
-    }
-
-    // Google 登入
-    [HttpPost("google/login")]
-    public async Task<ActionResult<LoginResponse>> GoogleLoginAsync([FromBody] string googleToken)
-    {
-        var result = await authService.GoogleLoginAsync(googleToken);
-        return ErrorOrOkResponse(result);
     }
 }

@@ -33,8 +33,8 @@ public class Program
                 .AddEnvironmentVariables();
 
             // 從 appsettings.json 讀取 Serilog 設定
-           builder.Host.UseSerilog((context, services, configuration) =>
-                configuration.ReadFrom.Configuration(context.Configuration));
+            builder.Host.UseSerilog((context, services, configuration) =>
+                 configuration.ReadFrom.Configuration(context.Configuration));
 
             // 配置 EF Core 與 PostgreSQL
             builder.Services.AddDbContext<AppDbContext>(options =>
@@ -53,21 +53,21 @@ public class Program
 
 
             // Add services to the container.
-            builder.Services.AddAuthorization();
+            //builder.Services.AddAuthorization();
 
             // 設定 Google OAuth 2.0 認證
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = "Cookies"; // 使用 Cookie 儲存用戶會話
-                options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme; // 設定 Google 作為挑戰方案
-            })
-            .AddGoogle(options =>
-            {
-                options.ClientId = builder.Configuration["GOOGLE_CLIENT_ID"] ?? "";
-                options.ClientSecret = builder.Configuration["GOOGLE_SECRET_KEY"] ?? "";
-                options.Scope.Add("email"); // 請求 email 權限
-                options.SaveTokens = true; // 儲存 token，這樣可以用來生成 JWT
-            });
+            //builder.Services.AddAuthentication(options =>
+            //{
+            //    options.DefaultScheme = "Cookies"; // 使用 Cookie 儲存用戶會話
+            //    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme; // 設定 Google 作為挑戰方案
+            //})
+            //.AddGoogle(options =>
+            //{
+            //    options.ClientId = builder.Configuration["GOOGLE_CLIENT_ID"] ?? "";
+            //    options.ClientSecret = builder.Configuration["GOOGLE_SECRET_KEY"] ?? "";
+            //    options.Scope.Add("email"); // 請求 email 權限
+            //    options.SaveTokens = true; // 儲存 token，這樣可以用來生成 JWT
+            //});
 
             // 配置 JWT 認證
             builder.Services
@@ -148,9 +148,9 @@ public class Program
                 Console.WriteLine($"An error occurred during migration: {ex.Message}");
             }
 
-            
+
             app.UseSerilogHttpSessionsLogging(HttpSessionInfoToLog.All);
-            
+
             // 註冊 ExceptionHandlingMiddleware
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
