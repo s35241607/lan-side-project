@@ -1,29 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Row, Col, Form, Input, Button, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import { LoginProps } from "../types/props";
+// import { LoginProps } from "../types/props";
 import { LoginRequest } from "../types/Api";
 import { useNavigate } from "react-router-dom";
+import { useGetLogin } from "../hooks/useGetLogin";
+
+interface LoginProps {
+  setShowForgot: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 const LoginForm: React.FC<LoginProps> = ({ setShowForgot }) => {
   const [form] = Form.useForm();
 
   const navigate = useNavigate();
-  const [account, setAccount] = useState<LoginRequest>({
-    login: "",
-    password: "",
-  });
 
-  // 以下等串接丟入api後可以刪除
-  useEffect(() => {
-    if (account.login && account.password) {
-      console.log("輸入內容為", account);
-    }
-  }, [account]);
-
+  const { fetchLogin } = useGetLogin();
   const onFinish = (values: LoginRequest) => {
-    setAccount(values);
-    message.success("登入成功");
+    fetchLogin(values);
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -69,7 +63,10 @@ const LoginForm: React.FC<LoginProps> = ({ setShowForgot }) => {
               { min: 8, message: "密碼至少需要8個字元！" },
             ]}
           >
-            <Input placeholder="請輸入密碼" prefix={<LockOutlined />} />
+            <Input.Password
+              placeholder="請輸入密碼"
+              prefix={<LockOutlined />}
+            />
           </Form.Item>
 
           {/* <Form.Item name="remember" valuePropName="checked">

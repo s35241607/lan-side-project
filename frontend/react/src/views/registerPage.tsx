@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Row, Col, Form, Input, Button, message } from "antd";
 import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
 import { RegisterRequest } from "../types/Api";
@@ -9,35 +9,16 @@ const RegisterPage: React.FC = () => {
   const [form] = Form.useForm();
 
   const navigate = useNavigate();
-  const [account, setAccount] = useState<RegisterRequest>({
-    email: "",
-    username: "",
-    password: "",
-  });
 
-  // 以下等串接丟入api後可以刪除
-  useEffect(() => {
-    if (account.email && account.username && account.password) {
-      console.log("輸入內容為", account);
-    }
-  }, [account]);
-
-  const onFinishFailed = (errorInfo: any) => {
+  const onFinishFailed = async (errorInfo: any) => {
     console.log("表單驗證失敗:", errorInfo);
     message.error("請檢查資料是否輸入完整");
   };
 
-  const { fetchRegister, userData } = useGetRegister();
-  const onFinish = (values: RegisterRequest) => {
-    setAccount(values);
+  const { fetchRegister } = useGetRegister();
+  const onFinish = async (values: RegisterRequest) => {
     fetchRegister(values);
   };
-
-  useEffect(() => {
-    if (userData) {
-      message.success("註冊成功");
-    }
-  }, [userData]);
 
   return (
     <Row justify="center" align="middle" className="h-screen">
@@ -87,7 +68,10 @@ const RegisterPage: React.FC = () => {
               { min: 8, message: "密碼至少需要8個字元！" },
             ]}
           >
-            <Input placeholder="請輸入密碼" prefix={<LockOutlined />} />
+            <Input.Password
+              placeholder="請輸入密碼"
+              prefix={<LockOutlined />}
+            />
           </Form.Item>
 
           <Form.Item>

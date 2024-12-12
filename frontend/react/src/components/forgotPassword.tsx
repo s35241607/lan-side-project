@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Form, Input, Button, message } from "antd";
 import { MailOutlined } from "@ant-design/icons";
-import { LoginProps } from "../types/props";
 
-const ForgotPassword: React.FC<LoginProps> = ({ setShowForgot }) => {
+interface ForgotPasswordProps {
+  setShowForgot: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const ForgotPassword: React.FC<ForgotPasswordProps> = ({ setShowForgot }) => {
   const [form] = Form.useForm();
 
   const [forgetEmail, setForgetEmail] = useState<string>("");

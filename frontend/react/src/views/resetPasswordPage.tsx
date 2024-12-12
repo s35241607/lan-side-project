@@ -61,7 +61,10 @@ const ResetPasswordPage: React.FC = () => {
                 { min: 8, message: "密碼至少需要8個字元！" },
               ]}
             >
-              <Input placeholder="請輸入新密碼" prefix={<LockOutlined />} />
+              <Input.Password
+                placeholder="請輸入新密碼"
+                prefix={<LockOutlined />}
+              />
             </Form.Item>
 
             <Form.Item
@@ -72,7 +75,10 @@ const ResetPasswordPage: React.FC = () => {
                 { min: 8, message: "密碼至少需要8個字元！" },
               ]}
             >
-              <Input placeholder="請輸入新密碼" prefix={<LockOutlined />} />
+              <Input.Password
+                placeholder="請輸入新密碼"
+                prefix={<LockOutlined />}
+              />
             </Form.Item>
 
             <Form.Item>
