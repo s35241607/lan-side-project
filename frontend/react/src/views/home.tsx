@@ -29,7 +29,7 @@ const Home: React.FC = () => {
     } else {
       const waitLoading = setTimeout(() => {
         setIsLoading(false);
-      }, 2000);
+      }, 5000);
       setToken(retrievedToken);
       return () => clearTimeout(waitLoading);
     }

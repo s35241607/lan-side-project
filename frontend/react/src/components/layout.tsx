@@ -5,9 +5,10 @@ import {
   UploadOutlined,
   UserOutlined,
   VideoCameraOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
-import { Button, Layout, Menu, theme } from "antd";
-
+import { Button, Layout, Menu, theme, message } from "antd";
+import { useNavigate } from "react-router-dom";
 const { Header, Sider, Content } = Layout;
 
 interface LayoutProps {
@@ -15,10 +16,17 @@ interface LayoutProps {
 }
 
 const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  const logOutHandler = (): void => {
+    document.cookie = "token=; max-age=0; path=/;";
+    navigate("/loginPage");
+    message.success("登出成功");
+  };
 
   return (
     <Layout className="h-screen">
@@ -28,21 +36,31 @@ const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
           theme="dark"
           mode="inline"
           defaultSelectedKeys={["1"]}
+          onClick={(e) => {
+            if (e.key === "4") {
+              logOutHandler();
+            }
+          }}
           items={[
             {
               key: "1",
               icon: <UserOutlined />,
-              label: "nav 1",
+              label: "基本資料",
             },
             {
               key: "2",
               icon: <VideoCameraOutlined />,
-              label: "nav 2",
+              label: "我的作品",
             },
             {
               key: "3",
               icon: <UploadOutlined />,
-              label: "nav 3",
+              label: "新增作品",
+            },
+            {
+              key: "4",
+              icon: <LogoutOutlined />,
+              label: "LogOut",
             },
           ]}
         />

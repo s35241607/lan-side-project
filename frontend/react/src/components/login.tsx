@@ -1,6 +1,12 @@
 import React from "react";
 import { Row, Col, Form, Input, Button, message } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import {
+  UserOutlined,
+  LockOutlined,
+  GoogleSquareFilled,
+  GithubFilled,
+  FacebookFilled,
+} from "@ant-design/icons";
 // import { LoginProps } from "../types/props";
 import { LoginRequest } from "../types/Api";
 import { useNavigate } from "react-router-dom";
@@ -73,14 +79,14 @@ const LoginForm: React.FC<LoginProps> = ({ setShowForgot }) => {
             <Checkbox>記住我</Checkbox>
           </Form.Item> */}
 
-          <div className="flex justify-end my-4">
+          <Form.Item className="flex justify-end my-4">
             <p
               className="text-slate-400 cursor-pointer transition-colors hover:text-slate-600"
               onClick={() => setShowForgot(true)}
             >
               forgot password?
             </p>
-          </div>
+          </Form.Item>
 
           {/* <div className="flex justify-end my-4">
             <p
@@ -95,6 +101,22 @@ const LoginForm: React.FC<LoginProps> = ({ setShowForgot }) => {
             <Button type="primary" htmlType="submit" block>
               Sign In
             </Button>
+          </Form.Item>
+
+          <Form.Item>
+            <div className="flex items-center justify-center w-full mt-4">
+              <div className="flex-1 h-px bg-slate-200" />
+              <span className="mx-2 text-slate-500">OR</span>
+              <div className="flex-1 h-px bg-slate-200 " />
+            </div>
+          </Form.Item>
+
+          <Form.Item>
+            <div className="flex justify-around mb-4">
+              <GoogleSquareFilled className="text-[#4285F4] bg-white text-3xl cursor-pointer" />
+              <GithubFilled className="text-3xl text-black cursor-pointer" />
+              <FacebookFilled className="text-3xl text-blue-900 cursor-pointer" />
+            </div>
           </Form.Item>
 
           <Button block onClick={() => navigate("/registerPage")}>
