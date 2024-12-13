@@ -48,10 +48,7 @@ public class AuthController(AuthService authService) : BaseController
     [HttpPost("google-login")]
     public async Task<ActionResult<LoginResponse>> GoogleLoginAsync(GoogleLoginRequest request)
     {
-        // 驗證 Google ID Token
-        var payload = await GoogleJsonWebSignature.ValidateAsync(request.Token);
 
-        //var result = await authService.GoogleLoginAsync(accessToken);
         return Ok();
     }
 
@@ -86,6 +83,35 @@ public class AuthController(AuthService authService) : BaseController
     [HttpPost("change-password")]
     public async Task<IActionResult> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
     {
+        return Ok();
+    }
+
+    /// <summary>
+    /// 跳轉到 Google 進行授權
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("google-auth")]
+    public IActionResult GoogleAuth()
+    {
+        var redirectUrl = Url.Action("GoogleCallback", "Auth");
+        var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+        return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+    }
+
+    /// <summary>
+    /// Google 授權後的回調
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("google-callback")]
+    public async Task<IActionResult> GoogleCallback()
+    {
+        var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+        if (!result.Succeeded)
+        {
+            return BadRequest("Google authentication failed.");
+        }
+
+        // 在這裡處理用戶信息，例如創建或更新用戶
         return Ok();
     }
 }
