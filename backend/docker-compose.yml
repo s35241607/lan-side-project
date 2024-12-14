@@ -1,31 +1,37 @@
-version: '3.8'
-
-services:
+﻿services:
   lan-side-project:
     image: ${DOCKER_REGISTRY-}lansideproject
     build:
       context: lan-side-project
       dockerfile: Dockerfile
+    container_name: lan-side-project
+    restart: always
     depends_on:
       - postgres
+    env_file:
+      - .env
     environment:
-      DB_HOST: postgres
-      DB_USER: postgres
-      DB_PASSWORD: password
-      DB_NAME: postgres
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-postgres}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
+      
+    
 
   postgres:
     image: postgres:16
     container_name: postgres
+    restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: postgres
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_DB: ${DB_NAME:-postgres}
     ports:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    restart: always
+    
 
 volumes:
   postgres-data:
