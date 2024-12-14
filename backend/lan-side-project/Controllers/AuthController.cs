@@ -41,6 +41,19 @@ public class AuthController(AuthService authService) : BaseController
     }
 
     /// <summary>
+    /// 更改密碼
+    /// </summary>
+    /// <param name="changePasswordRequest"></param>
+    /// <returns></returns>
+    [Authorize]
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
+    {
+        var result = await authService.ChangePasswordAsync(changePasswordRequest);
+        return ErrorOrNoContent(result);
+    }
+
+    /// <summary>
     /// 忘記密碼
     /// </summary>
     /// <param name="forgotPasswordRequest"></param>
@@ -59,19 +72,6 @@ public class AuthController(AuthService authService) : BaseController
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
     {
-        return Ok();
-    }
-
-    /// <summary>
-    /// 更改密碼
-    /// </summary>
-    /// <param name="changePasswordRequest"></param>
-    /// <returns></returns>
-    [Authorize]
-    [HttpPost("change-password")]
-    public async Task<IActionResult> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
-    {
-        var result = await authService.ChangePasswordAsync(changePasswordRequest);
         return Ok();
     }
 

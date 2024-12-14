@@ -4,6 +4,7 @@ using lan_side_project.DTOs.Requests.Auth;
 using lan_side_project.Models;
 using lan_side_project.Repositories;
 using lan_side_project.Utils;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 
@@ -77,6 +78,27 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils)
         return response;
     }
 
+
+    public async Task<ErrorOr<object>> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
+    {
+        var user = await userRepository.GetUserByIdAsync(changePasswordRequest.UserId);
+        if (user == null)
+        {
+            return Error.NotFound("UserNotFound", "The provided user does not exist.");
+        }
+
+        if (!BCrypt.Net.BCrypt.Verify(changePasswordRequest.OldPassword, user.PasswordHash))
+        {
+            return Error.Unauthorized("InvalidPassword", "The provided old password is incorrect.");
+        }
+
+        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(changePasswordRequest.NewPassword);
+        user.PasswordHash = hashedPassword;
+        await userRepository.UpdateUserAsync(user);
+
+        return new { message = "Password changed successfully" };
+    }
+
     // Google 登入或註冊
     public async Task<ErrorOr<LoginResponse>> GoogleLoginAsync(string googleToken)
     {
@@ -132,9 +154,5 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils)
         return JObject.Parse(response);
     }
 
-    internal async Task ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
-    {
-        throw new NotImplementedException();
-    }
 
 }
