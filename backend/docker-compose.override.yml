@@ -1,4 +1,4 @@
-﻿services:
+services:
   lan-side-project:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
