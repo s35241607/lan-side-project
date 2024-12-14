@@ -2,8 +2,8 @@
 
 namespace lan_side_project.DTOs.Requests.Auth;
 
-public class ForgotPasswordRequest
+public class GoogleLoginRequest
 {
     [Required]
-    public required string Email { get; set; }
+    public required string Token { get; set; }
 }

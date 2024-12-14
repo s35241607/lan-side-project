@@ -4,6 +4,7 @@ using lan_side_project.Middlewares;
 using lan_side_project.Repositories;
 using lan_side_project.Services;
 using lan_side_project.Utils;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
@@ -33,7 +34,7 @@ public class Program
 
             // 從 appsettings.json 讀取 Serilog 設定
             builder.Host.UseSerilog((context, services, configuration) =>
-                configuration.ReadFrom.Configuration(context.Configuration));
+                 configuration.ReadFrom.Configuration(context.Configuration));
 
             // 配置 EF Core 與 PostgreSQL
             builder.Services.AddDbContext<AppDbContext>(options =>
@@ -53,8 +54,15 @@ public class Program
 
             // Add services to the container.
             builder.Services.AddAuthorization();
+            
+            // 配置 JWT 認證
             builder.Services
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultSignInScheme = "Cookies"; // 新增 SignIn 時使用的方案
+                })
                 .AddJwtBearer(options =>
                 {
                     // 當驗證失敗時，回應標頭會包含 WWW-Authenticate 標頭，這裡會顯示失敗的詳細錯誤原因
@@ -86,7 +94,16 @@ public class Program
                         //沒有設定的話預設為5分鐘，這會導致過期時間會再增加
                         ClockSkew = TimeSpan.Zero
                     };
-                });
+                })
+                .AddGoogle(options =>
+                {
+                    options.ClientId = builder.Configuration["GOOGLE_CLIENT_ID"] ?? "";
+                    options.ClientSecret = builder.Configuration["GOOGLE_SECRET_KEY"] ?? "";
+                    options.Scope.Add("email"); // 請求 email 權限
+                    options.SaveTokens = true; // 儲存 token，這樣可以用來生成 JWT
+                    options.CallbackPath = "/api/v1/auth/google-callback/";
+                })
+                .AddCookie("Cookies"); // 新增 Cookie 認證
 
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -131,10 +148,12 @@ public class Program
                 Console.WriteLine($"An error occurred during migration: {ex.Message}");
             }
 
+
+            app.UseSerilogHttpSessionsLogging(HttpSessionInfoToLog.All);
+
             // 註冊 ExceptionHandlingMiddleware
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-            app.UseSerilogHttpSessionsLogging(HttpSessionInfoToLog.All);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -145,6 +164,8 @@ public class Program
 
             //app.UseHttpsRedirection();
 
+            // 啟用身份驗證和授權
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

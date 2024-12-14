@@ -1,10 +1,11 @@
 ﻿using ErrorOr;
 using lan_side_project.DTOs.Reponses.Auth;
-using lan_side_project.DTOs.Requests.User;
+using lan_side_project.DTOs.Requests.Auth;
 using lan_side_project.Models;
 using lan_side_project.Repositories;
 using lan_side_project.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace lan_side_project.Services;
 
@@ -74,5 +75,60 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils)
         };
 
         return response;
+    }
+
+    // Google 登入或註冊
+    public async Task<ErrorOr<LoginResponse>> GoogleLoginAsync(string googleToken)
+    {
+        // 1. 驗證 Google Token 並解碼
+        var payload = await ValidateGoogleTokenAsync(googleToken);
+        if (payload == null)
+        {
+            return Error.Unauthorized("InvalidGoogleToken", "The provided Google token is invalid.");
+        }
+
+        var email = payload["email"]?.ToString();
+        var name = payload["name"]?.ToString();
+
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(name))
+        {
+            return Error.Unauthorized("GoogleTokenInvalid", "The Google token did not contain valid email or name.");
+        }
+
+        // 2. 查詢該 email 是否已註冊
+        var user = await userRepository.GetUserByEmailAsync(email);
+        if (user == null)
+        {
+            // 如果沒有找到使用者，則創建新使用者
+            user = new User
+            {
+                Username = name,
+                Email = email,
+                PasswordHash = "",  // Google 登入不需要密碼
+            };
+            await userRepository.AddUserAsync(user);
+        }
+
+        // 3. 生成 JWT Token 並返回
+        var jwtToken = jwtUtils.GenerateToken(user.Id, user.Username, user.Email);
+        var response = new LoginResponse
+        {
+            AccessToken = jwtToken,
+            RefreshToken = jwtUtils.GenerateRefreshToken()
+        };
+
+        return response;
+    }
+
+    // 驗證 Google Token 的方法
+    private async Task<JObject> ValidateGoogleTokenAsync(string googleToken)
+    {
+        // 使用 Google API 驗證 Token，並返回 payload (此處僅示範結構)
+        // 你可以使用 Google 的 TokenInfo endpoint 或 Google API 客戶端來驗證 token
+        var client = new HttpClient();
+        var response = await client.GetStringAsync($"https://oauth2.googleapis.com/tokeninfo?id_token={googleToken}");
+
+        // 回傳解碼後的 Google Token 內容 (payload)
+        return JObject.Parse(response);
     }
 }
