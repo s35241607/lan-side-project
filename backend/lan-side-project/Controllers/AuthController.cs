@@ -41,18 +41,6 @@ public class AuthController(AuthService authService) : BaseController
     }
 
     /// <summary>
-    /// 使用 Google 帳號登入
-    /// </summary>
-    /// <param name="googleToken"></param>
-    /// <returns></returns>
-    [HttpPost("google-login")]
-    public async Task<ActionResult<LoginResponse>> GoogleLoginAsync(GoogleLoginRequest request)
-    {
-
-        return Ok();
-    }
-
-    /// <summary>
     /// 忘記密碼
     /// </summary>
     /// <param name="forgotPasswordRequest"></param>
@@ -91,9 +79,9 @@ public class AuthController(AuthService authService) : BaseController
     /// </summary>
     /// <returns></returns>
     [HttpGet("google-auth")]
-    public IActionResult GoogleAuth()
+    public IActionResult GoogleAuth([FromQuery] string returnUrl = "/")
     {
-        var redirectUrl = Url.Action("GoogleCallback", "Auth");
+        var redirectUrl = Url.Action("GoogleCallback", "Auth", new { returnUrl });
         var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
         return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
@@ -103,15 +91,24 @@ public class AuthController(AuthService authService) : BaseController
     /// </summary>
     /// <returns></returns>
     [HttpGet("google-callback")]
-    public async Task<IActionResult> GoogleCallback()
+    public async Task<IActionResult> GoogleCallback(string returnUrl)
     {
         var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+
         if (!result.Succeeded)
         {
             return BadRequest("Google authentication failed.");
         }
 
-        // 在這裡處理用戶信息，例如創建或更新用戶
-        return Ok();
+        // 使用者的資料會包含在 result.Principal 中，這裡可以提取到用戶資訊
+        var claims = result.Principal?.Claims.Select(c => new { c.Type, c.Value });
+
+        // 假設你想根據 Google 賬戶信息生成 JWT
+        var jwtToken = "google";
+
+        // 返回 token 和 returnUrl 給前端
+        //return Redirect($"{returnUrl}?token={jwtToken}");
+        // 統一回應格式，返回 token 和 returnUrl
+        return Ok(new { Token = jwtToken, ReturnUrl = returnUrl });
     }
 }
