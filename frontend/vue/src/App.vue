@@ -8,8 +8,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import axios from 'axios'
 import Home from './views/Home.vue';
 import Login from './views/Login.vue';
 
