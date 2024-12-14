@@ -71,6 +71,7 @@ public class AuthController(AuthService authService) : BaseController
     [HttpPost("change-password")]
     public async Task<IActionResult> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
     {
+        var result = await authService.ChangePasswordAsync(changePasswordRequest);
         return Ok();
     }
 

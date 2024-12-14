@@ -54,7 +54,7 @@ public class Program
 
             // Add services to the container.
             builder.Services.AddAuthorization();
-            
+
             // 配置 JWT 認證
             builder.Services
                 .AddAuthentication(options =>
@@ -89,7 +89,7 @@ public class Program
                         ValidateIssuerSigningKey = true,
 
                         // "1234567890123456" 應該從 IConfiguration 取得
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("JwtSettings:SecretKey"))),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("JwtSettings:SecretKey") ?? "")),
 
                         //沒有設定的話預設為5分鐘，這會導致過期時間會再增加
                         ClockSkew = TimeSpan.Zero

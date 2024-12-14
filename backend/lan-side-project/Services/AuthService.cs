@@ -131,4 +131,10 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils)
         // 回傳解碼後的 Google Token 內容 (payload)
         return JObject.Parse(response);
     }
+
+    internal async Task ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
+    {
+        throw new NotImplementedException();
+    }
+
 }
