@@ -90,7 +90,7 @@
 
     ```
 
-3. 確認後端 API 運行在 `http://localhost:5000`。
+3. 確認後端 API 運行在 `http://localhost:8080`。
 
 ### 3. **前端部署**
 
