@@ -17,4 +17,27 @@ public class UserController(UserService userService) : BaseController
         var result = await userService.GetAllUsersAsync();
         return ErrorOrOkResponse(result);
     }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<UserResponse>> GetUserByIdAsync(int id)
+    {
+        var result = await userService.GetUserByIdAsync(id);
+        return ErrorOrOkResponse(result);
+    }
+
+    [HttpGet("{id}/iamge")]
+    public async Task<ActionResult> GetUserImageByIdAsync(int id)
+    {
+        // TODO: 取得圖片
+        var result = "";
+        return ErrorOrNoContent(result);
+    }
+
+    [HttpPost("{id}/iamge")]
+    public async Task<ActionResult> UploadUserImageAsync(int id, IFormFile image)
+    {
+        // TODO: 上傳圖片
+        var result = "";
+        return ErrorOrNoContent(result);
+    }
 }

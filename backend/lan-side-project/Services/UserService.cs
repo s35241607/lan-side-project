@@ -14,4 +14,11 @@ public class UserService(UserRepository userRepository)
 
         return MapperUtils.Mapper.Map<List<UserResponse>>(users);
     }
+
+    public async Task<ErrorOr<UserResponse>> GetUserByIdAsync(int id)
+    {
+        var user = await userRepository.GetUserByIdAsync(id);
+
+        return MapperUtils.Mapper.Map<UserResponse>(user);
+    }
 }
