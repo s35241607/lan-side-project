@@ -1,14 +1,8 @@
-﻿using ErrorOr;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Npgsql;
-using Serilog.Extensions.Hosting;
-using System.Net;
-using System.Security.Authentication;
+﻿using Serilog.Extensions.Hosting;
 
 namespace lan_side_project.Middlewares;
 
-public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger, IConfiguration config, DiagnosticContext diagnosticContext)
+public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger, DiagnosticContext diagnosticContext)
 {
     public async Task InvokeAsync(HttpContext httpContext)
     {

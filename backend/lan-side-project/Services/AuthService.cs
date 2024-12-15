@@ -99,6 +99,16 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils)
         return new { message = "Password changed successfully" };
     }
 
+
+    public async Task ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest)
+    {
+        var user = await userRepository.GetUserByEmailAsync(forgotPasswordRequest.Email);
+        if (user == null)
+        {
+            //return Error.NotFound($"{forgotPasswordRequest.Email})
+        }
+    }
+
     // Google 登入或註冊
     public async Task<ErrorOr<LoginResponse>> GoogleLoginAsync(string googleToken)
     {
@@ -142,6 +152,7 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils)
         return response;
     }
 
+
     // 驗證 Google Token 的方法
     private async Task<JObject> ValidateGoogleTokenAsync(string googleToken)
     {
@@ -153,6 +164,5 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils)
         // 回傳解碼後的 Google Token 內容 (payload)
         return JObject.Parse(response);
     }
-
 
 }
