@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace lan_side_project.Services;
-public class MailService(IConfiguration configuration)
+public class MailService(IConfiguration configuration, ILogger<MailService> logger)
 {
     private readonly string _smtpHost = configuration.GetValue<string>("SMTP:HOST") ?? "";
     private readonly int _smtpPort = configuration.GetValue<int>("SMTP:PORT", 587);
@@ -34,6 +34,18 @@ public class MailService(IConfiguration configuration)
         };
 
         await smtpClient.SendMailAsync(mailMessage);
+    }
+
+    public async Task SendEmailWithErrorHandlingAsync(string email, string subject, string body)
+    {
+        try
+        {
+            await SendEmailAsync(email, subject, body);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to send email.");
+        }
     }
 }
 
