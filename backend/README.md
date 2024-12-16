@@ -23,7 +23,7 @@ docker-compose up --build
 在專案根目錄中，打開終端機並執行以下命令來產生新的 Migration：
 
 ```bash
-dotnet ef migrations add InitialCreate
+dotnet ef migrations add [name]
 ```
 
 ### 2. 更新資料庫
