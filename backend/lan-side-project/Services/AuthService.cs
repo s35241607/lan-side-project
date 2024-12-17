@@ -1,4 +1,5 @@
 ﻿using ErrorOr;
+using lan_side_project.DTOs.Reponses;
 using lan_side_project.DTOs.Reponses.Auth;
 using lan_side_project.DTOs.Requests.Auth;
 using lan_side_project.Models;
@@ -7,11 +8,15 @@ using lan_side_project.Utils;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using System.Security.Cryptography;
 
 namespace lan_side_project.Services;
 
-public class AuthService(UserRepository userRepository, JwtUtils jwtUtils)
+public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailService mailService, IConfiguration config)
 {
+    private readonly int RESET_PASSWORD_TOKEN_EXPIRATION_MINUTES = 5;
+
+
     public async Task<ErrorOr<LoginResponse>> LoginAsync(LoginRequest loginRequest)
     {
         // 先根據 username 或 email 查詢使用者
@@ -79,7 +84,7 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils)
     }
 
 
-    public async Task<ErrorOr<object>> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
+    public async Task<ErrorOr<ApiResponse>> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
     {
         var user = await userRepository.GetUserByIdAsync(changePasswordRequest.UserId);
         if (user == null)
@@ -96,17 +101,47 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils)
         user.PasswordHash = hashedPassword;
         await userRepository.UpdateUserAsync(user);
 
-        return new { message = "Password changed successfully" };
+        return ApiResponse.Success("Password changed successfully.");
     }
 
-
-    public async Task ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest)
+    public async Task<ErrorOr<ApiResponse>> ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest)
     {
+
         var user = await userRepository.GetUserByEmailAsync(forgotPasswordRequest.Email);
+
+
         if (user == null)
         {
-            //return Error.NotFound($"{forgotPasswordRequest.Email})
+            return Error.NotFound("UserNotFound", "The provided user does not exist.");
         }
+
+        // 產生 Token 並記錄失效時間
+        var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(256));
+        
+        user.ResetPasswordToken = token;
+        user.ResetPasswordTokenExpiration = DateTime.UtcNow.AddMinutes(RESET_PASSWORD_TOKEN_EXPIRATION_MINUTES);
+
+
+        // 發送修改密碼連結給使用者
+        var resetLink = $"{config.GetValue<string>("FRONTEND_BASE_URL")}/reset-password?token={token}";
+        var subject = "Password Reset Request";
+        var body = $"Click on the link to reset your password: {resetLink}";
+
+        await mailService.SendEmailWithErrorHandlingAsync(user.Email, subject, body);
+
+        return ApiResponse.Success("A password reset email has been sent. Please check your inbox.");
+    }
+
+    public async Task<ErrorOr<ApiResponse>> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
+    {
+        // TODO: 
+
+        var user = await userRepository.GetUserByEmailAsync(resetPasswordRequest.Email);
+
+        // 發送密碼修改成功通知信
+        await mailService.SendEmailAsync("", "", "");
+
+        return ApiResponse.Success("Password reseted successfully.");
     }
 
     // Google 登入或註冊

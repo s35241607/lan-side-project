@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Net.Http;
 using Google.Apis.Auth;
 using lan_side_project.DTOs.Requests.Auth;
+using lan_side_project.DTOs.Reponses;
 
 namespace lan_side_project.Controllers;
 
@@ -47,7 +48,7 @@ public class AuthController(AuthService authService) : BaseController
     /// <returns></returns>
     [Authorize]
     [HttpPost("change-password")]
-    public async Task<IActionResult> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
+    public async Task<ActionResult<ApiResponse>> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
     {
         var result = await authService.ChangePasswordAsync(changePasswordRequest);
         return ErrorOrNoContent(result);
@@ -59,10 +60,10 @@ public class AuthController(AuthService authService) : BaseController
     /// <param name="forgotPasswordRequest"></param>
     /// <returns></returns>
     [HttpPost("forgot-password")]
-    public async Task<IActionResult> ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest)
+    public async Task<ActionResult<ApiResponse>> CForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest)
     {
-        await authService.ForgotPasswordAsync(forgotPasswordRequest);
-        return Ok();
+        var result = await authService.ForgotPasswordAsync(forgotPasswordRequest);
+        return ErrorOrOkResponse(result);
     }
 
     /// <summary>
@@ -71,9 +72,10 @@ public class AuthController(AuthService authService) : BaseController
     /// <param name="resetPasswordRequest"></param>
     /// <returns></returns>
     [HttpPost("reset-password")]
-    public async Task<IActionResult> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
+    public async Task<ActionResult<ApiResponse>> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
     {
-        return Ok();
+        var result = await authService.ResetPasswordAsync(resetPasswordRequest);
+        return ErrorOrOkResponse(result);
     }
 
     /// <summary>
