@@ -15,6 +15,8 @@ namespace lan_side_project.Services;
 public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailService mailService, IConfiguration config)
 {
     private readonly int RESET_PASSWORD_TOKEN_EXPIRATION_MINUTES = 5;
+    private readonly int MAX_FAILED_ATTEMPTS = 5;
+    private readonly int LOCKOUT_DURATION_MINUTES = 15;
 
 
     public async Task<ErrorOr<LoginResponse>> LoginAsync(LoginRequest loginRequest)
@@ -56,8 +58,6 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailS
         {
             return Error.Conflict("EmailAlreadyExists", "A user with the same email already exists.");
         }
-
-        // TODO: 檢查信箱是否合法
 
         // 密碼加密
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerRequest.Password);
@@ -109,7 +109,6 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailS
 
         var user = await userRepository.GetUserByEmailAsync(forgotPasswordRequest.Email);
 
-
         if (user == null)
         {
             return Error.NotFound("UserNotFound", "The provided user does not exist.");
@@ -117,10 +116,11 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailS
 
         // 產生 Token 並記錄失效時間
         var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(256));
-        
+
         user.ResetPasswordToken = token;
         user.ResetPasswordTokenExpiration = DateTime.UtcNow.AddMinutes(RESET_PASSWORD_TOKEN_EXPIRATION_MINUTES);
 
+        await userRepository.UpdateUserAsync(user);
 
         // 發送修改密碼連結給使用者
         var resetLink = $"{config.GetValue<string>("FRONTEND_BASE_URL")}/reset-password?token={token}";
@@ -134,12 +134,44 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailS
 
     public async Task<ErrorOr<ApiResponse>> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
     {
-        // TODO: 
+        var user = await userRepository.GetUserByIdAsync(resetPasswordRequest.UserId);
 
-        var user = await userRepository.GetUserByEmailAsync(resetPasswordRequest.Email);
+        if (user == null)
+        {
+            return Error.NotFound("UserNotFound", "The provided user does not exist.");
+        }
 
-        // 發送密碼修改成功通知信
-        await mailService.SendEmailAsync("", "", "");
+        // 驗證帳戶是否被封鎖
+        if (user.ResetPasswordLockoutEnd.HasValue && user.ResetPasswordLockoutEnd.Value > DateTime.UtcNow)
+        {
+            return Error.Unauthorized("UserResetPasswordLocked", "The user account is locked.");
+        }
+
+        // 驗證 Token 是否正確
+        if (resetPasswordRequest.Token != user.ResetPasswordToken ||
+            user.ResetPasswordTokenExpiration < DateTime.UtcNow)
+        {
+            user.ResetPasswordFailedAttempts++;
+
+            if (user.ResetPasswordFailedAttempts >= MAX_FAILED_ATTEMPTS)
+            {
+                user.ResetPasswordFailedAttempts = 0;
+                user.ResetPasswordLockoutEnd = DateTime.UtcNow.AddMinutes(LOCKOUT_DURATION_MINUTES);
+            }
+
+            await userRepository.UpdateUserAsync(user);
+            return Error.Unauthorized("UserResetTokenInvalid", "The provided token is invalid or has expired.");
+        }
+
+        // 更新使用者的密碼
+        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(resetPasswordRequest.NewPassword);
+        user.PasswordHash = hashedPassword;
+
+        // 清除重設密碼的 Token 和失敗次數
+        user.ResetPasswordToken = null;
+        user.ResetPasswordFailedAttempts = 0;
+
+        await userRepository.UpdateUserAsync(user);
 
         return ApiResponse.Success("Password reseted successfully.");
     }

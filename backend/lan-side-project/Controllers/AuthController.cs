@@ -51,7 +51,7 @@ public class AuthController(AuthService authService) : BaseController
     public async Task<ActionResult<ApiResponse>> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
     {
         var result = await authService.ChangePasswordAsync(changePasswordRequest);
-        return ErrorOrNoContent(result);
+        return ErrorOrOkResponse(result);
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ public class AuthController(AuthService authService) : BaseController
     /// <param name="forgotPasswordRequest"></param>
     /// <returns></returns>
     [HttpPost("forgot-password")]
-    public async Task<ActionResult<ApiResponse>> CForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest)
+    public async Task<ActionResult<ApiResponse>> ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest)
     {
         var result = await authService.ForgotPasswordAsync(forgotPasswordRequest);
         return ErrorOrOkResponse(result);

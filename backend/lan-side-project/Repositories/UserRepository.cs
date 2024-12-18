@@ -12,7 +12,7 @@ public class UserRepository(AppDbContext db)
     {
         return await db.Users
             .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Username == username);
+            .FirstOrDefaultAsync(user => user.Username == username);
     }
 
     // 根據 Email 查詢使用者
@@ -20,7 +20,7 @@ public class UserRepository(AppDbContext db)
     {
         return await db.Users
             .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Email == email);
+            .FirstOrDefaultAsync(user => user.Email == email);
     }
 
     // 根據 Username Or Email 查詢使用者
@@ -28,7 +28,7 @@ public class UserRepository(AppDbContext db)
     {
         return await db.Users
             .AsNoTracking()
-            .Where(u => EF.Functions.Like(u.Username, login) || EF.Functions.Like(u.Email, login))
+            .Where(user => EF.Functions.Like(user.Username, login) || EF.Functions.Like(user.Email, login))
             .FirstOrDefaultAsync();
     }
 
@@ -67,16 +67,16 @@ public class UserRepository(AppDbContext db)
 
         if (user == null)
             return;
-        
+
         db.Users.Remove(user);
         await db.SaveChangesAsync();
-        
+
     }
 
     // 確認使用者是否存在
     public async Task<bool> IsUserExistsAsync(string username)
     {
-        return await db.Users.AnyAsync(u => u.Username == username);
+        return await db.Users.AnyAsync(user => user.Username == username);
     }
 
     // 取得所有使用者
