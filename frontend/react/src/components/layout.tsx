@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import UserImage from "../assets/images/frog.jpg";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -7,7 +8,7 @@ import {
   VideoCameraOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
-import { Button, Layout, Menu, message } from "antd";
+import { Button, Layout, Menu, message, Dropdown } from "antd";
 import { useNavigate } from "react-router-dom";
 const { Header, Sider, Content } = Layout;
 
@@ -25,14 +26,61 @@ const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
     message.success("登出成功");
   };
 
+  const siderItems = [
+    {
+      key: "1",
+      icon: <UserOutlined />,
+      label: "基本資料",
+    },
+    {
+      key: "2",
+      icon: <VideoCameraOutlined />,
+      label: "我的作品",
+    },
+    {
+      key: "3",
+      icon: <UploadOutlined />,
+      label: "新增作品",
+    },
+    {
+      key: "4",
+      icon: <LogoutOutlined />,
+      label: "LogOut",
+    },
+  ];
+
+  const navItems = [
+    {
+      key: "1",
+      label: "基本資料",
+    },
+    {
+      key: "2",
+      label: "我的作品",
+    },
+    {
+      key: "3",
+      label: "新增作品",
+    },
+  ];
+
+  const userItems = [
+    {
+      key: "1",
+      label: <div>個人資訊</div>,
+    },
+    {
+      key: "2",
+      label: <div onClick={logOutHandler}>登出</div>,
+    },
+  ];
+
   return (
     <Layout className="h-screen">
       <Sider
         trigger={null}
         collapsed={collapsed}
         breakpoint="lg"
-        // breakpoint="xs" // 設定斷點為最小寬度
-        // className="hidden xs:block"
         collapsedWidth="0"
       >
         <div className="demo-logo-vertical" />
@@ -45,28 +93,7 @@ const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
               logOutHandler();
             }
           }}
-          items={[
-            {
-              key: "1",
-              icon: <UserOutlined />,
-              label: "基本資料",
-            },
-            {
-              key: "2",
-              icon: <VideoCameraOutlined />,
-              label: "我的作品",
-            },
-            {
-              key: "3",
-              icon: <UploadOutlined />,
-              label: "新增作品",
-            },
-            {
-              key: "4",
-              icon: <LogoutOutlined />,
-              label: "LogOut",
-            },
-          ]}
+          items={siderItems}
         />
       </Sider>
 
@@ -83,29 +110,22 @@ const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
             theme="light"
             defaultSelectedKeys={["1"]}
             className="flex-1 ml-4 justify-center bg-transparent sticky hidden border-0 sm:flex"
-            items={[
-              {
-                key: "1",
-                label: "基本資料",
-              },
-              {
-                key: "2",
-                label: "我的作品",
-              },
-              {
-                key: "3",
-                label: "新增作品",
-              },
-            ]}
+            items={navItems}
           />
 
-          <Button
-            type="primary"
-            onClick={logOutHandler}
-            className="hidden sm:block"
+          <Dropdown
+            menu={{ items: userItems }}
+            placement="bottom"
+            className="cursor-pointer sm:block"
           >
-            登出
-          </Button>
+            <div className="w-12 h-12 border-2 border-white rounded-full flex items-center justify-center overflow-hidden">
+              <img
+                src={UserImage}
+                alt="UserImage"
+                className="object-cover w-full h-full"
+              />
+            </div>
+          </Dropdown>
         </Header>
 
         <Content className="bg-slate-200">
