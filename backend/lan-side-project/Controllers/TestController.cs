@@ -1,4 +1,5 @@
 using lan_side_project.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace lan_side_project.Controllers;
@@ -12,5 +13,12 @@ public class TestController(MailService mailService) : BaseController
     {
         await mailService.SendEmailAsync(to, subject, body);
         return Ok("Send successfully");
+    }
+
+    [Authorize]
+    [HttpGet("validate-jwt")]
+    public async Task<IActionResult> ValidateAsync()
+    {
+        return Ok("success");
     }
 }
