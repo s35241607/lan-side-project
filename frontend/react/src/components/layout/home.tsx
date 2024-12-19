@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Layout from "../components/layout";
-import Loading from "../components/loading";
+import Loading from "../loading";
 
 function getCookie(name: string): string | null {
   const cookies = document.cookie.split("; ");
@@ -29,7 +28,7 @@ const Home: React.FC = () => {
     } else {
       const waitLoading = setTimeout(() => {
         setIsLoading(false);
-      }, 5000);
+      }, 2000);
       setToken(retrievedToken);
       return () => clearTimeout(waitLoading);
     }
@@ -42,7 +41,7 @@ const Home: React.FC = () => {
   return (
     <>
       {isLoading && <Loading />}
-      <Layout>您的token是{token}</Layout>
+      您的token是{token}
     </>
   );
 };

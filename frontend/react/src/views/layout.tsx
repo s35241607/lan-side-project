@@ -8,17 +8,14 @@ import {
   VideoCameraOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
+import BreadCrumb from "../components/layout/breadCrumb";
 import { Button, Layout, Menu, message, Dropdown } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
 const { Header, Sider, Content } = Layout;
 
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
+const LayoutComponent: React.FC = () => {
   const navigate = useNavigate();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   const logOutHandler = (): void => {
     document.cookie = "token=; max-age=0; path=/;";
@@ -67,11 +64,18 @@ const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
   const userItems = [
     {
       key: "1",
-      label: <div>個人資訊</div>,
+      label: "首頁",
+      onClick: () => navigate("/layout/home"),
     },
     {
       key: "2",
-      label: <div onClick={logOutHandler}>登出</div>,
+      label: "個人資訊",
+      onClick: () => navigate("/layout/userInfo"),
+    },
+    {
+      key: "3",
+      label: "登出",
+      onClick: logOutHandler,
     },
   ];
 
@@ -103,6 +107,7 @@ const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => setCollapsed(!collapsed)}
+            className="flex sm:hidden"
           />
 
           <Menu
@@ -116,7 +121,7 @@ const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
           <Dropdown
             menu={{ items: userItems }}
             placement="bottom"
-            className="cursor-pointer sm:block"
+            className="ml-4 mr-2 cursor-pointer sm:block"
           >
             <div className="w-12 h-12 border-2 border-white rounded-full flex items-center justify-center overflow-hidden">
               <img
@@ -130,7 +135,10 @@ const LayoutComponent: React.FC<LayoutProps> = ({ children }) => {
 
         <Content className="bg-slate-200">
           <div className="w-full h-full overflow-y-auto">
-            <div className="max-w-full whitespace-normal p-4">{children}</div>
+            <div className="max-w-full whitespace-normal p-4">
+              <BreadCrumb />
+              <Outlet />
+            </div>
           </div>
         </Content>
       </Layout>
