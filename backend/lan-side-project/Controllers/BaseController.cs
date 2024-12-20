@@ -1,5 +1,5 @@
 ﻿using ErrorOr;
-using lan_side_project.DTOs.Reponses;
+using lan_side_project.DTOs.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

@@ -1,4 +1,4 @@
-﻿namespace lan_side_project.DTOs.Reponses.User;
+﻿namespace lan_side_project.DTOs.Responses.User;
 
 public record UserResponse(
     int Id,

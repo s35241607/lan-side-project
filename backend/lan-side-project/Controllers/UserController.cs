@@ -1,4 +1,4 @@
-﻿using lan_side_project.DTOs.Reponses.User;
+﻿using lan_side_project.DTOs.Responses.User;
 using lan_side_project.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

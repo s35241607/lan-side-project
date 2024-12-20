@@ -1,4 +1,4 @@
-﻿namespace lan_side_project.DTOs.Reponses.Auth;
+﻿namespace lan_side_project.DTOs.Responses.Auth;
 
 public class LoginResponse
 {

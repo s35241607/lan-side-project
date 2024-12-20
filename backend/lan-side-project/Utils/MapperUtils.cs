@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using lan_side_project.DTOs.Reponses.User;
+using lan_side_project.DTOs.Responses.User;
 using lan_side_project.Models;
 
 namespace lan_side_project.Utils;

@@ -1,4 +1,4 @@
-﻿namespace lan_side_project.DTOs.Reponses;
+﻿namespace lan_side_project.DTOs.Responses;
 
 public class ApiResponse(string code, string message, Dictionary<string, object>? errors = null)
 {

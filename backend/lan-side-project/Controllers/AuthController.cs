@@ -1,4 +1,4 @@
-﻿using lan_side_project.DTOs.Reponses.Auth;
+﻿using lan_side_project.DTOs.Responses.Auth;
 using lan_side_project.Services;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication;
@@ -9,7 +9,7 @@ using System.Security.Claims;
 using System.Net.Http;
 using Google.Apis.Auth;
 using lan_side_project.DTOs.Requests.Auth;
-using lan_side_project.DTOs.Reponses;
+using lan_side_project.DTOs.Responses;
 
 namespace lan_side_project.Controllers;
 
