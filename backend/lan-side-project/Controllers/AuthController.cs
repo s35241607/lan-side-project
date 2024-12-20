@@ -18,10 +18,10 @@ namespace lan_side_project.Controllers;
 public class AuthController(AuthService authService) : BaseController
 {
     /// <summary>
-    /// 註冊
+    /// 註冊新帳戶
     /// </summary>
-    /// <param name="registerRequest"></param>
-    /// <returns></returns>
+    /// <param name="registerRequest">註冊請求資料</param>
+    /// <returns>註冊結果</returns>
     [HttpPost("register")]
     public async Task<ActionResult<LoginResponse>> RegisterAsync(RegisterRequest registerRequest)
     {
@@ -32,8 +32,8 @@ public class AuthController(AuthService authService) : BaseController
     /// <summary>
     /// 一般登入
     /// </summary>
-    /// <param name="loginRequest"></param>
-    /// <returns></returns>
+    /// <param name="loginRequest">登入請求資料</param>
+    /// <returns>登入結果</returns>
     [HttpPost("login")]
     public async Task<ActionResult<LoginResponse>> LoginAsync(LoginRequest loginRequest)
     {
@@ -42,10 +42,10 @@ public class AuthController(AuthService authService) : BaseController
     }
 
     /// <summary>
-    /// 更改密碼
+    /// 更改使用者密碼
     /// </summary>
-    /// <param name="changePasswordRequest"></param>
-    /// <returns></returns>
+    /// <param name="changePasswordRequest">更改密碼請求資料</param>
+    /// <returns>更改密碼結果</returns>
     [Authorize]
     [HttpPost("change-password")]
     public async Task<ActionResult<ApiResponse>> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
@@ -55,10 +55,10 @@ public class AuthController(AuthService authService) : BaseController
     }
 
     /// <summary>
-    /// 忘記密碼
+    /// 忘記密碼流程
     /// </summary>
-    /// <param name="forgotPasswordRequest"></param>
-    /// <returns></returns>
+    /// <param name="forgotPasswordRequest">忘記密碼請求資料</param>
+    /// <returns>忘記密碼結果</returns>
     [HttpPost("forgot-password")]
     public async Task<ActionResult<ApiResponse>> ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest)
     {
@@ -69,8 +69,8 @@ public class AuthController(AuthService authService) : BaseController
     /// <summary>
     /// 重製密碼
     /// </summary>
-    /// <param name="resetPasswordRequest"></param>
-    /// <returns></returns>
+    /// <param name="resetPasswordRequest">重製密碼請求資料</param>
+    /// <returns>重製密碼結果</returns>
     [HttpPost("reset-password")]
     public async Task<ActionResult<ApiResponse>> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
     {

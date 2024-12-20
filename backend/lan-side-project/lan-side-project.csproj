@@ -12,6 +12,9 @@
 		<DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
 	</PropertyGroup>
 
+	<PropertyGroup>
+  	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
 	<ItemGroup>
 	  <Compile Remove="logs\**" />
 	  <Content Remove="logs\**" />

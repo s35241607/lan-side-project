@@ -28,11 +28,31 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailS
             return Error.NotFound("UserNotFound", "The provided username or email does not exist.");
         }
 
+        // 驗證帳戶是否被封鎖
+        if (user.LoginLockoutEnd.HasValue && user.LoginLockoutEnd.Value > DateTime.UtcNow)
+        {
+            return Error.Unauthorized("UserLoginLocked", "The user account is locked.");
+        }
+
         // 使用 BCrypt 比對密碼
         if (!BCrypt.Net.BCrypt.Verify(loginRequest.Password, user.PasswordHash))
         {
+            user.LoginFailedAttempts++;
+
+            if (user.LoginFailedAttempts >= MAX_FAILED_ATTEMPTS)
+            {
+                user.LoginFailedAttempts = 0;
+                user.LoginLockoutEnd = DateTime.UtcNow.AddMinutes(LOCKOUT_DURATION_MINUTES);
+            }
+
+            await userRepository.UpdateUserAsync(user);
             return Error.Unauthorized("InvalidPassword", "The provided password is incorrect.");
         }
+
+        // 清除登入失敗次數 & 更新最後登入時間
+        user.LoginFailedAttempts = 0;
+        user.LastLoginDate = DateTime.UtcNow;
+        await userRepository.UpdateUserAsync(user);
 
         var response = new LoginResponse
         {
@@ -67,7 +87,8 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailS
         {
             Username = registerRequest.Username,
             Email = registerRequest.Email,
-            PasswordHash = hashedPassword
+            PasswordHash = hashedPassword,
+            LastLoginDate = DateTime.UtcNow
         };
 
         // 儲存使用者
