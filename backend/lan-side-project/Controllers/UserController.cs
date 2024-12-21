@@ -50,32 +50,4 @@ public class UserController(UserService userService, IUserContext userContext) :
         var result = await userService.GetUserByIdAsync(userContext.UserId);
         return ErrorOrOkResponse(result);
     }
-    /// <summary>
-    /// 取得指定使用者的圖片
-    /// </summary>
-    /// <param name="id">使用者 ID</param>
-    /// <returns></returns>
-
-    [HttpGet("{id}/iamge")]
-    public async Task<ActionResult> GetUserImageByIdAsync(int id)
-    {
-        // TODO: 取得圖片
-        var result = "";
-        return ErrorOrNoContent(result);
-    }
-
-    /// <summary>
-    /// 上傳使用者圖片
-    /// </summary>
-    /// <param name="id">使用者 ID</param>
-    /// <param name="image">上傳的圖片檔案</param>
-    /// <returns></returns>
-
-    [HttpPost("{id}/iamge")]
-    public async Task<ActionResult> UploadUserImageAsync(int id, IFormFile image)
-    {
-        // TODO: 上傳圖片
-        var result = "";
-        return ErrorOrNoContent(result);
-    }
 }
