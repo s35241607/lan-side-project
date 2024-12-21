@@ -1,6 +1,9 @@
 ﻿using ErrorOr;
+using lan_side_project.DTOs.Responses;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace lan_side_project.Controllers;
 public abstract class BaseController : ControllerBase
@@ -10,17 +13,8 @@ public abstract class BaseController : ControllerBase
         ActionResult<TValue> response = Problem();
         result.SwitchFirst(
             value => { response = Ok(value); },
-            error => {
-                response = error.Type switch
-                {
-                    ErrorType.Conflict => Conflict(error),
-                    ErrorType.NotFound => NotFound(error),
-                    ErrorType.Validation => BadRequest(error),
-                    ErrorType.Failure => UnprocessableEntity(error),
-                    ErrorType.Unexpected => UnprocessableEntity(error),
-                    _ => UnprocessableEntity(error)
-                };
-            });
+            error => { response = HandleError(error); }
+        );
         return response;
     }
     protected ActionResult<TValue> ErrorOrCreatedResponse<TValue>(ErrorOr<TValue> result, string uri)
@@ -28,17 +22,8 @@ public abstract class BaseController : ControllerBase
         ActionResult<TValue> response = Problem();
         result.SwitchFirst(
             value => { response = Created(uri, value); },
-            error => {
-                response = error.Type switch
-                {
-                    ErrorType.Conflict => Conflict(error),
-                    ErrorType.NotFound => NotFound(error),
-                    ErrorType.Validation => BadRequest(error),
-                    ErrorType.Failure => UnprocessableEntity(error),
-                    ErrorType.Unexpected => UnprocessableEntity(error),
-                    _ => UnprocessableEntity(error)
-                };
-            });
+            error => { response = HandleError(error); }
+        );
         return response;
     }
     protected ActionResult<TValue> ErrorOrAcceptedResponse<TValue>(ErrorOr<TValue> result)
@@ -46,17 +31,8 @@ public abstract class BaseController : ControllerBase
         ActionResult<TValue> response = Problem();
         result.SwitchFirst(
             value => { response = Accepted(value); },
-            error => {
-                response = error.Type switch
-                {
-                    ErrorType.Conflict => Conflict(error),
-                    ErrorType.NotFound => NotFound(error),
-                    ErrorType.Validation => BadRequest(error),
-                    ErrorType.Failure => UnprocessableEntity(error),
-                    ErrorType.Unexpected => UnprocessableEntity(error),
-                    _ => UnprocessableEntity(error)
-                };
-            });
+            error => { response = HandleError(error); }
+        );
         return response;
     }
     protected ActionResult ErrorOrNoContent(ErrorOr<object> result)
@@ -64,17 +40,23 @@ public abstract class BaseController : ControllerBase
         ActionResult response = Problem();
         result.SwitchFirst(
             _ => { response = NoContent(); },
-            error => {
-                response = error.Type switch
-                {
-                    ErrorType.Conflict => Conflict(error),
-                    ErrorType.NotFound => NotFound(error),
-                    ErrorType.Validation => BadRequest(error),
-                    ErrorType.Failure => UnprocessableEntity(error),
-                    ErrorType.Unexpected => UnprocessableEntity(error),
-                    _ => UnprocessableEntity(error)
-                };
-            });
+            error => { response = HandleError(error); }
+        );
         return response;
+    }
+
+    // 處理錯誤邏輯
+    private ActionResult HandleError(Error error)
+    {
+        var errorResponse = ApiResponse.Error(error.Code, error.Description, error.Metadata);
+        return error.Type switch
+        {
+            ErrorType.Conflict => Conflict(errorResponse),
+            ErrorType.NotFound => NotFound(errorResponse),
+            ErrorType.Validation => BadRequest(errorResponse),
+            ErrorType.Failure => UnprocessableEntity(errorResponse),
+            ErrorType.Unexpected => UnprocessableEntity(errorResponse),
+            _ => UnprocessableEntity(errorResponse)
+        };
     }
 }

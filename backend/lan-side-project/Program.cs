@@ -1,5 +1,7 @@
 ﻿
+using lan_side_project.Common;
 using lan_side_project.Data;
+using lan_side_project.DTOs.Responses;
 using lan_side_project.Middlewares;
 using lan_side_project.Repositories;
 using lan_side_project.Services;
@@ -12,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Reflection;
 using System.Text;
 
 namespace lan_side_project;
@@ -39,6 +42,13 @@ public class Program
             // 配置 EF Core 與 PostgreSQL
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+            
+            
+            // 新增 HttpContextAccessor 以便在服務中訪問 HTTP 上下文
+            builder.Services.AddHttpContextAccessor();
+
+            // 註冊 IUserContext 和 UserContext
+            builder.Services.AddScoped<IUserContext, UserContext>();
 
             // 註冊 Repository
             builder.Services.AddScoped<UserRepository>();
@@ -46,6 +56,8 @@ public class Program
             // 註冊 Service
             builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<UserImageService>();
+            builder.Services.AddSingleton<MailService>();
 
             // 註冊 Utils
             builder.Services.AddSingleton<JwtUtils>();
@@ -54,7 +66,7 @@ public class Program
 
             // Add services to the container.
             builder.Services.AddAuthorization();
-            
+
             // 配置 JWT 認證
             builder.Services
                 .AddAuthentication(options =>
@@ -89,7 +101,7 @@ public class Program
                         ValidateIssuerSigningKey = true,
 
                         // "1234567890123456" 應該從 IConfiguration 取得
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("JwtSettings:SecretKey"))),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("JwtSettings:SecretKey") ?? "")),
 
                         //沒有設定的話預設為5分鐘，這會導致過期時間會再增加
                         ClockSkew = TimeSpan.Zero
@@ -115,24 +127,23 @@ public class Program
                     options.InvalidModelStateResponseFactory = context =>
                     {
                         var errors = context.ModelState
-                            .Where(m => m.Value?.Errors.Count > 0)
-                            .Select(m => new
-                            {
-                                Field = m.Key,
-                                Messages = m.Value?.Errors.Select(e => e.ErrorMessage).ToArray()
-                            });
+                        .Where(m => m.Value?.Errors?.Any() == true)
+                        .ToDictionary(
+                            m => m.Key, // 使用 field name 作為 dictionary key
+                            m => (object)(m.Value?.Errors.Select(e => e.ErrorMessage).ToArray() ?? []) // 若 Errors 為 null，使用空陣列
+                        );
 
-                        var errorResponse = new
-                        {
-                            Code = "ValidationError",
-                            Message = "Input validation failed.",
-                            Errors = errors
-                        };
+                        var errorResponse = ApiResponse.Error("ValidationError", "Input validation failed.", errors);
 
                         return new BadRequestObjectResult(errorResponse);
                     };
                 });
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
 
             var app = builder.Build();
 

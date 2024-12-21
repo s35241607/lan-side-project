@@ -5,6 +5,8 @@ namespace lan_side_project.DTOs.Requests.Auth;
 public class ResetPasswordRequest
 {
     [Required]
+    public required int UserId { get; set; }
+    [Required]
     public required string Token { get; set; }
     [Required]
     [MinLength(8)]

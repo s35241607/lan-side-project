@@ -1,4 +1,4 @@
-﻿using lan_side_project.DTOs.Reponses.Auth;
+﻿using lan_side_project.DTOs.Responses.Auth;
 using lan_side_project.Services;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication;
@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Net.Http;
 using Google.Apis.Auth;
 using lan_side_project.DTOs.Requests.Auth;
+using lan_side_project.DTOs.Responses;
 
 namespace lan_side_project.Controllers;
 
@@ -17,10 +18,10 @@ namespace lan_side_project.Controllers;
 public class AuthController(AuthService authService) : BaseController
 {
     /// <summary>
-    /// 註冊
+    /// 註冊新帳戶
     /// </summary>
-    /// <param name="registerRequest"></param>
-    /// <returns></returns>
+    /// <param name="registerRequest">註冊請求資料</param>
+    /// <returns>註冊結果</returns>
     [HttpPost("register")]
     public async Task<ActionResult<LoginResponse>> RegisterAsync(RegisterRequest registerRequest)
     {
@@ -31,8 +32,8 @@ public class AuthController(AuthService authService) : BaseController
     /// <summary>
     /// 一般登入
     /// </summary>
-    /// <param name="loginRequest"></param>
-    /// <returns></returns>
+    /// <param name="loginRequest">登入請求資料</param>
+    /// <returns>登入結果</returns>
     [HttpPost("login")]
     public async Task<ActionResult<LoginResponse>> LoginAsync(LoginRequest loginRequest)
     {
@@ -41,37 +42,40 @@ public class AuthController(AuthService authService) : BaseController
     }
 
     /// <summary>
-    /// 忘記密碼
+    /// 更改使用者密碼
     /// </summary>
-    /// <param name="forgotPasswordRequest"></param>
-    /// <returns></returns>
-    [HttpPost("forgot-password")]
-    public async Task<IActionResult> ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest)
+    /// <param name="changePasswordRequest">更改密碼請求資料</param>
+    /// <returns>更改密碼結果</returns>
+    [Authorize]
+    [HttpPost("change-password")]
+    public async Task<ActionResult<ApiResponse>> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
     {
-        return Ok();
+        var result = await authService.ChangePasswordAsync(changePasswordRequest);
+        return ErrorOrOkResponse(result);
+    }
+
+    /// <summary>
+    /// 忘記密碼流程
+    /// </summary>
+    /// <param name="forgotPasswordRequest">忘記密碼請求資料</param>
+    /// <returns>忘記密碼結果</returns>
+    [HttpPost("forgot-password")]
+    public async Task<ActionResult<ApiResponse>> ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest)
+    {
+        var result = await authService.ForgotPasswordAsync(forgotPasswordRequest);
+        return ErrorOrOkResponse(result);
     }
 
     /// <summary>
     /// 重製密碼
     /// </summary>
-    /// <param name="resetPasswordRequest"></param>
-    /// <returns></returns>
+    /// <param name="resetPasswordRequest">重製密碼請求資料</param>
+    /// <returns>重製密碼結果</returns>
     [HttpPost("reset-password")]
-    public async Task<IActionResult> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
+    public async Task<ActionResult<ApiResponse>> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
     {
-        return Ok();
-    }
-
-    /// <summary>
-    /// 更改密碼
-    /// </summary>
-    /// <param name="changePasswordRequest"></param>
-    /// <returns></returns>
-    [Authorize]
-    [HttpPost("change-password")]
-    public async Task<IActionResult> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
-    {
-        return Ok();
+        var result = await authService.ResetPasswordAsync(resetPasswordRequest);
+        return ErrorOrOkResponse(result);
     }
 
     /// <summary>
