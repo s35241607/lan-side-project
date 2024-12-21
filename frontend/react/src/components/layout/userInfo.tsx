@@ -4,7 +4,7 @@ import UserImage from "../../assets/images/frog.jpg";
 
 const UserInfo: React.FC = () => {
   return (
-    <Row justify="center" align="middle" className="m-4">
+    <Row justify="center" align="middle" className="m-4 w-full sm:w-10/12">
       <Col
         xs={24}
         sm={8}

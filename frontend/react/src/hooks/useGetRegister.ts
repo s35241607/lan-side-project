@@ -15,7 +15,7 @@ export const useGetRegister = () => {
       if (res.data) {
         console.log("註冊成功資料", res.data);
         message.success("註冊成功");
-        navigate("/loginPage");
+        navigate("/login");
       }
     } catch (e: any) {
       const { code } = e.response.data;

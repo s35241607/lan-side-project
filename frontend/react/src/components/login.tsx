@@ -119,7 +119,7 @@ const LoginForm: React.FC<LoginProps> = ({ setShowForgot }) => {
             </div>
           </Form.Item>
 
-          <Button block onClick={() => navigate("/registerPage")}>
+          <Button block onClick={() => navigate("/register")}>
             還不是會員? 前往註冊
           </Button>
         </Form>

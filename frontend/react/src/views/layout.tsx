@@ -19,7 +19,7 @@ const LayoutComponent: React.FC = () => {
 
   const logOutHandler = (): void => {
     document.cookie = "token=; max-age=0; path=/;";
-    navigate("/loginPage");
+    navigate("/login");
     message.success("登出成功");
   };
 
@@ -70,7 +70,7 @@ const LayoutComponent: React.FC = () => {
     {
       key: "2",
       label: "個人資訊",
-      onClick: () => navigate("/layout/userInfo"),
+      onClick: () => navigate("/layout/user-info"),
     },
     {
       key: "3",
@@ -114,12 +114,14 @@ const LayoutComponent: React.FC = () => {
             mode="horizontal"
             theme="light"
             defaultSelectedKeys={["1"]}
-            className="flex-1 ml-4 justify-center bg-transparent sticky hidden border-0 sm:flex"
+            className="flex-1 ml-4 justify-end bg-transparent sticky hidden border-0 sm:flex"
             items={navItems}
           />
 
           <Dropdown
             menu={{ items: userItems }}
+            trigger={["click"]}
+            arrow
             placement="bottom"
             className="ml-4 mr-2 cursor-pointer sm:block"
           >
@@ -137,7 +139,10 @@ const LayoutComponent: React.FC = () => {
           <div className="w-full h-full overflow-y-auto">
             <div className="max-w-full whitespace-normal p-4">
               <BreadCrumb />
-              <Outlet />
+
+              <div className=" flex justify-center">
+                <Outlet />
+              </div>
             </div>
           </div>
         </Content>
