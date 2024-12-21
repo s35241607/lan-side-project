@@ -1,4 +1,5 @@
 ﻿
+using lan_side_project.Common;
 using lan_side_project.Data;
 using lan_side_project.DTOs.Responses;
 using lan_side_project.Middlewares;
@@ -41,6 +42,13 @@ public class Program
             // 配置 EF Core 與 PostgreSQL
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+            
+            
+            // 新增 HttpContextAccessor 以便在服務中訪問 HTTP 上下文
+            builder.Services.AddHttpContextAccessor();
+
+            // 註冊 IUserContext 和 UserContext
+            builder.Services.AddScoped<IUserContext, UserContext>();
 
             // 註冊 Repository
             builder.Services.AddScoped<UserRepository>();
