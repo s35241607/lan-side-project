@@ -144,7 +144,7 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailS
         await userRepository.UpdateUserAsync(user);
 
         // 發送修改密碼連結給使用者
-        var resetLink = $"{config.GetValue<string>("FRONTEND_BASE_URL")}/reset-password?token={token}";
+        var resetLink = $"{config.GetValue<string>("FRONTEND_BASE_URL")}/reset-password?userId={user.Id}&token={token}";
         var subject = "Password Reset Request";
         var body = $"Click on the link to reset your password: {resetLink}";
 
