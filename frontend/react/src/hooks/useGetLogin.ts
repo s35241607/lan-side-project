@@ -23,7 +23,7 @@ export const useGetLogin = () => {
         document.cookie = `token=${accessToken};expires = ${tommorrow.toUTCString()}`;
 
         message.success("登入成功");
-        navigate("/home");
+        navigate("/layout");
       }
     } catch (e: any) {
       const { code } = e.response.data;

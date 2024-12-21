@@ -80,7 +80,7 @@ const RegisterPage: React.FC = () => {
             </Button>
           </Form.Item>
 
-          <Button block onClick={() => navigate("/loginPage")}>
+          <Button block onClick={() => navigate("/login")}>
             返回登入頁面
           </Button>
         </Form>
