@@ -17,10 +17,10 @@ public class UserImageController(UserImageService userImageService) : BaseContro
     /// <returns></returns>
 
     [HttpGet("{id}/image")]
-    public async Task<ActionResult> GetUserImageByIdAsync(int id)
+    public async Task<IActionResult> GetUserImageByIdAsync(int id)
     {
         var result = await userImageService.GetAvatarAsync(id);
-        return File(result.Value, "image/png");
+        return ErrorOrFile(result, "image/png");
     }
 
     /// <summary>

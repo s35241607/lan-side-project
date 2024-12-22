@@ -26,7 +26,7 @@ public class AuthController(AuthService authService) : BaseController
     public async Task<ActionResult<LoginResponse>> RegisterAsync(RegisterRequest registerRequest)
     {
         var result = await authService.RegisterAsync(registerRequest);
-        return ErrorOrOkResponse(result);
+        return ErrorOrOk(result);
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ public class AuthController(AuthService authService) : BaseController
     public async Task<ActionResult<LoginResponse>> LoginAsync(LoginRequest loginRequest)
     {
         var result = await authService.LoginAsync(loginRequest);
-        return ErrorOrOkResponse(result);
+        return ErrorOrOk(result);
     }
 
     /// <summary>
@@ -51,7 +51,7 @@ public class AuthController(AuthService authService) : BaseController
     public async Task<ActionResult<ApiResponse>> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
     {
         var result = await authService.ChangePasswordAsync(changePasswordRequest);
-        return ErrorOrOkResponse(result);
+        return ErrorOrOk(result);
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public class AuthController(AuthService authService) : BaseController
     public async Task<ActionResult<ApiResponse>> ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest)
     {
         var result = await authService.ForgotPasswordAsync(forgotPasswordRequest);
-        return ErrorOrOkResponse(result);
+        return ErrorOrOk(result);
     }
 
     /// <summary>
@@ -75,7 +75,7 @@ public class AuthController(AuthService authService) : BaseController
     public async Task<ActionResult<ApiResponse>> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
     {
         var result = await authService.ResetPasswordAsync(resetPasswordRequest);
-        return ErrorOrOkResponse(result);
+        return ErrorOrOk(result);
     }
 
     /// <summary>

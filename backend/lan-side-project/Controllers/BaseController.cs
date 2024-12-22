@@ -3,12 +3,13 @@ using lan_side_project.DTOs.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Newtonsoft.Json.Linq;
 
 namespace lan_side_project.Controllers;
 public abstract class BaseController : ControllerBase
 {
-    protected ActionResult<TValue> ErrorOrOkResponse<TValue>(ErrorOr<TValue> result)
+    protected ActionResult<TValue> ErrorOrOk<TValue>(ErrorOr<TValue> result)
     {
         ActionResult<TValue> response = Problem();
         result.SwitchFirst(
@@ -17,7 +18,7 @@ public abstract class BaseController : ControllerBase
         );
         return response;
     }
-    protected ActionResult<TValue> ErrorOrCreatedResponse<TValue>(ErrorOr<TValue> result, string uri)
+    protected ActionResult<TValue> ErrorOrCreated<TValue>(ErrorOr<TValue> result, string uri)
     {
         ActionResult<TValue> response = Problem();
         result.SwitchFirst(
@@ -26,7 +27,7 @@ public abstract class BaseController : ControllerBase
         );
         return response;
     }
-    protected ActionResult<TValue> ErrorOrAcceptedResponse<TValue>(ErrorOr<TValue> result)
+    protected ActionResult<TValue> ErrorOrAccepted<TValue>(ErrorOr<TValue> result)
     {
         ActionResult<TValue> response = Problem();
         result.SwitchFirst(
@@ -40,6 +41,16 @@ public abstract class BaseController : ControllerBase
         ActionResult response = Problem();
         result.SwitchFirst(
             _ => { response = NoContent(); },
+            error => { response = HandleError(error); }
+        );
+        return response;
+    }
+
+    protected IActionResult ErrorOrFile<TValue>(ErrorOr<TValue> result, string contentType)
+    {
+        ActionResult response = Problem();
+        result.SwitchFirst(
+            value => { response = File(result.Value as byte[], contentType); },
             error => { response = HandleError(error); }
         );
         return response;

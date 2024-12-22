@@ -24,7 +24,7 @@ public class UserController(UserService userService, IUserContext userContext) :
     public async Task<ActionResult<List<UserResponse>>> GetAllUsersAsync()
     {
         var result = await userService.GetAllUsersAsync();
-        return ErrorOrOkResponse(result);
+        return ErrorOrOk(result);
     }
 
     /// <summary>
@@ -36,7 +36,7 @@ public class UserController(UserService userService, IUserContext userContext) :
     public async Task<ActionResult<UserResponse>> GetUserByIdAsync(int id)
     {
         var result = await userService.GetUserByIdAsync(id);
-        return ErrorOrOkResponse(result);
+        return ErrorOrOk(result);
     }
 
     /// <summary>
@@ -48,6 +48,6 @@ public class UserController(UserService userService, IUserContext userContext) :
     public async Task<ActionResult<UserResponse>> GetUserByCurrentUserAsync()
     {
         var result = await userService.GetUserByIdAsync(userContext.UserId);
-        return ErrorOrOkResponse(result);
+        return ErrorOrOk(result);
     }
 }
