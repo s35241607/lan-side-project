@@ -73,7 +73,6 @@ public class Program
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultSignInScheme = "Cookies"; // 新增 SignIn 時使用的方案
                 })
                 .AddJwtBearer(options =>
                 {
@@ -106,16 +105,7 @@ public class Program
                         //沒有設定的話預設為5分鐘，這會導致過期時間會再增加
                         ClockSkew = TimeSpan.Zero
                     };
-                })
-                .AddGoogle(options =>
-                {
-                    options.ClientId = builder.Configuration["GOOGLE_CLIENT_ID"] ?? "";
-                    options.ClientSecret = builder.Configuration["GOOGLE_SECRET_KEY"] ?? "";
-                    options.Scope.Add("email"); // 請求 email 權限
-                    options.SaveTokens = true; // 儲存 token，這樣可以用來生成 JWT
-                    options.CallbackPath = "/api/v1/auth/google-callback/";
-                })
-                .AddCookie("Cookies"); // 新增 Cookie 認證
+                });
 
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
