@@ -7,7 +7,6 @@ namespace lan_side_project.Controllers;
 
 [Route("api/v1/users/")]
 [ApiController]
-[Authorize]
 
 public class UserImageController(UserImageService userImageService) : BaseController
 {
@@ -20,9 +19,8 @@ public class UserImageController(UserImageService userImageService) : BaseContro
     [HttpGet("{id}/image")]
     public async Task<ActionResult> GetUserImageByIdAsync(int id)
     {
-        // TODO: 取得圖片
-        var result = "";
-        return ErrorOrNoContent(result);
+        var result = await userImageService.GetAvatarAsync(id);
+        return File(result.Value, "image/png");
     }
 
     /// <summary>
@@ -33,10 +31,10 @@ public class UserImageController(UserImageService userImageService) : BaseContro
     /// <returns></returns>
 
     [HttpPost("{id}/image")]
+    [Authorize]
     public async Task<ActionResult> UploadUserImageAsync(int id, IFormFile image)
     {
-        // TODO: 上傳圖片
-        var result = "";
+        var result = await userImageService.UploadAvatarAsync(id, image);
         return ErrorOrNoContent(result);
     }
 }
