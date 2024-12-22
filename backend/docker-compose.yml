@@ -16,8 +16,9 @@
       DB_NAME: ${DB_NAME:-postgres}
       DB_USER: ${DB_USER:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-password}
-      
-    
+    volumes:
+      - app-files:/app/files
+      - app-logs:/app/logs
 
   postgres:
     image: postgres:16
@@ -34,5 +35,9 @@
     
 
 volumes:
+  app-files:
+    driver: local
+  app-logs:
+    driver: local  
   postgres-data:
     driver: local
