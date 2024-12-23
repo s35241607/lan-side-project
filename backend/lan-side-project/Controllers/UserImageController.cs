@@ -1,4 +1,5 @@
-﻿using lan_side_project.Services;
+﻿using lan_side_project.DTOs.Responses;
+using lan_side_project.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -32,9 +33,9 @@ public class UserImageController(UserImageService userImageService) : BaseContro
 
     [HttpPost("{id}/image")]
     [Authorize]
-    public async Task<ActionResult> UploadUserImageAsync(int id, IFormFile image)
+    public async Task<ActionResult<ApiResponse>> UploadUserImageAsync(int id, IFormFile image)
     {
         var result = await userImageService.UploadAvatarAsync(id, image);
-        return ErrorOrNoContent(result);
+        return ErrorOrOk(result);
     }
 }
