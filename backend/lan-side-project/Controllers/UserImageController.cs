@@ -1,4 +1,5 @@
-﻿using lan_side_project.Services;
+﻿using lan_side_project.DTOs.Responses;
+using lan_side_project.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,6 @@ namespace lan_side_project.Controllers;
 
 [Route("api/v1/users/")]
 [ApiController]
-[Authorize]
 
 public class UserImageController(UserImageService userImageService) : BaseController
 {
@@ -18,11 +18,10 @@ public class UserImageController(UserImageService userImageService) : BaseContro
     /// <returns></returns>
 
     [HttpGet("{id}/image")]
-    public async Task<ActionResult> GetUserImageByIdAsync(int id)
+    public async Task<IActionResult> GetUserImageByIdAsync(int id)
     {
-        // TODO: 取得圖片
-        var result = "";
-        return ErrorOrNoContent(result);
+        var result = await userImageService.GetAvatarAsync(id);
+        return ErrorOrFile(result, "image/png");
     }
 
     /// <summary>
@@ -33,10 +32,10 @@ public class UserImageController(UserImageService userImageService) : BaseContro
     /// <returns></returns>
 
     [HttpPost("{id}/image")]
-    public async Task<ActionResult> UploadUserImageAsync(int id, IFormFile image)
+    [Authorize]
+    public async Task<ActionResult<ApiResponse>> UploadUserImageAsync(int id, IFormFile image)
     {
-        // TODO: 上傳圖片
-        var result = "";
-        return ErrorOrNoContent(result);
+        var result = await userImageService.UploadAvatarAsync(id, image);
+        return ErrorOrOk(result);
     }
 }

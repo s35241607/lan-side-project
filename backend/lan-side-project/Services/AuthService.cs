@@ -14,9 +14,10 @@ namespace lan_side_project.Services;
 
 public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailService mailService, IConfiguration config)
 {
-    private readonly int RESET_PASSWORD_TOKEN_EXPIRATION_MINUTES = 5;
-    private readonly int MAX_FAILED_ATTEMPTS = 5;
-    private readonly int LOCKOUT_DURATION_MINUTES = 15;
+    private readonly int _resetPasswordTokenExpirationMinutes = 5;
+    private readonly int _maxFailedAttempts = 5;
+    private readonly int _lockoutDurationMinutes = 15;
+
 
 
     public async Task<ErrorOr<LoginResponse>> LoginAsync(LoginRequest loginRequest)
@@ -39,10 +40,10 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailS
         {
             user.LoginFailedAttempts++;
 
-            if (user.LoginFailedAttempts >= MAX_FAILED_ATTEMPTS)
+            if (user.LoginFailedAttempts >= _maxFailedAttempts)
             {
                 user.LoginFailedAttempts = 0;
-                user.LoginLockoutEnd = DateTime.UtcNow.AddMinutes(LOCKOUT_DURATION_MINUTES);
+                user.LoginLockoutEnd = DateTime.UtcNow.AddMinutes(_lockoutDurationMinutes);
             }
 
             await userRepository.UpdateUserAsync(user);
@@ -139,7 +140,7 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailS
         var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(256));
 
         user.ResetPasswordToken = token;
-        user.ResetPasswordTokenExpiration = DateTime.UtcNow.AddMinutes(RESET_PASSWORD_TOKEN_EXPIRATION_MINUTES);
+        user.ResetPasswordTokenExpiration = DateTime.UtcNow.AddMinutes(_resetPasswordTokenExpirationMinutes);
 
         await userRepository.UpdateUserAsync(user);
 
@@ -174,10 +175,10 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailS
         {
             user.ResetPasswordFailedAttempts++;
 
-            if (user.ResetPasswordFailedAttempts >= MAX_FAILED_ATTEMPTS)
+            if (user.ResetPasswordFailedAttempts >= _maxFailedAttempts)
             {
                 user.ResetPasswordFailedAttempts = 0;
-                user.ResetPasswordLockoutEnd = DateTime.UtcNow.AddMinutes(LOCKOUT_DURATION_MINUTES);
+                user.ResetPasswordLockoutEnd = DateTime.UtcNow.AddMinutes(_lockoutDurationMinutes);
             }
 
             await userRepository.UpdateUserAsync(user);
