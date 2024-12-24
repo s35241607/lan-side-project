@@ -3,6 +3,7 @@ import {
   RegisterRequest,
   LoginRequest,
   ForgotPasswordRequest,
+  ResetPasswordRequest,
 } from "../types/Api";
 export default {
   // 註冊
@@ -16,5 +17,9 @@ export default {
   // 忘記密碼，寄信
   forgotPassword(data: ForgotPasswordRequest) {
     return apiHelper.post("auth/forgot-password", data);
+  },
+  // 重置密碼
+  resetPassword(data: ResetPasswordRequest) {
+    return apiHelper.post("auth/reset-password", data);
   },
 };

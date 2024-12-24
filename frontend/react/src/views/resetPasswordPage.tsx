@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Row, Col, Form, Input, Button, message } from "antd";
 import { LockOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useGetResetPassword } from "../hooks/useGetResetPassword";
+import { getCookie } from "../utils/getCookie";
 
 const ResetPasswordPage: React.FC = () => {
   const navegate = useNavigate();
@@ -12,22 +14,27 @@ const ResetPasswordPage: React.FC = () => {
     againPassword: string;
   }
 
-  const [password, setPassword] = useState<Password>({
-    password: "",
-    againPassword: "",
-  });
+  const { fetchResetPassword } = useGetResetPassword();
 
-  // 以下等串接丟入api後可以刪除
-  useEffect(() => {
-    if (password) {
-      console.log("輸入內容為", password);
-    }
-  }, [password]);
-
+  // token似乎不能放在redux 還是要從cookie取出才行
   const onFinish = (values: Password) => {
-    setPassword(values);
     console.log("您輸入的密碼為", values);
-    message.success("重設密碼成功");
+
+    if (values.password !== values.againPassword) {
+      message.error("前後密碼不一致");
+      return;
+    }
+
+    const token = getCookie("token");
+    if (token) {
+      fetchResetPassword({
+        token,
+        newPassword: values.password,
+      });
+      message.success("重設密碼成功");
+    } else {
+      message.error("發生錯誤，查無token");
+    }
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -90,7 +97,7 @@ const ResetPasswordPage: React.FC = () => {
             <div className="w-full my-2 flex justify-center">
               <p
                 className=" text-blue-900 cursor-pointer font-bold transition-colors hover:text-blue-700"
-                onClick={() => navegate("/loginPage")}
+                onClick={() => navegate("/login")}
               >
                 回登入頁
               </p>
