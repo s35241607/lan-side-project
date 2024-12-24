@@ -11,14 +11,19 @@ import {
 import BreadCrumb from "../components/layout/breadCrumb";
 import { Button, Layout, Menu, message, Dropdown } from "antd";
 import { useNavigate, Outlet } from "react-router-dom";
+import { clearToken } from "../stores/userSlice";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../store";
 const { Header, Sider, Content } = Layout;
 
 const LayoutComponent: React.FC = () => {
+  const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(true);
 
   const logOutHandler = (): void => {
     document.cookie = "token=; max-age=0; path=/;";
+    dispatch(clearToken());
     navigate("/login");
     message.success("登出成功");
   };

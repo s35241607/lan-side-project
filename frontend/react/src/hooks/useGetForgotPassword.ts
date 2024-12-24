@@ -13,7 +13,7 @@ export const useGetForgotPassword = () => {
       if (res.data) {
         console.log("寄mail成功", res.data);
         message.success("寄mail成功");
-        // navigate("/loginPage");
+        // navigate("/login");
       }
     } catch (e: any) {
       console.log(e);

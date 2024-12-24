@@ -1,35 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Loading from "../loading";
-
-function getCookie(name: string): string | null {
-  const cookies = document.cookie.split("; ");
-  // 可能會有很多個cookie，先做切割
-  // 再把各個cookie在切割成key,value 比對key
-  for (const cookie of cookies) {
-    const [key, value] = cookie.split("=");
-    if (key === name) {
-      return value;
-    }
-  }
-  return null;
-}
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../../store";
+import { setToken } from "../../stores/userSlice";
+import { getCookie } from "../../utils/getCookie";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-
-  const [token, setToken] = useState<string | null>(null);
+  const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const retrievedToken = getCookie("token");
     if (!retrievedToken) {
-      navigate("/loginPage");
+      navigate("/login");
     } else {
       const waitLoading = setTimeout(() => {
         setIsLoading(false);
       }, 2000);
-      setToken(retrievedToken);
+      dispatch(setToken(retrievedToken));
       return () => clearTimeout(waitLoading);
     }
   }, [navigate]);
@@ -41,7 +31,7 @@ const Home: React.FC = () => {
   return (
     <>
       {isLoading && <Loading />}
-      您的token是{token}
+      這裡是首頁
     </>
   );
 };
