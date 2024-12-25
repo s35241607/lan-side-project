@@ -17,7 +17,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/layout" element={<Layout />}>
-          <Route index element={<Home />} />
+          <Route index element={<Navigate to="/layout/home" replace />} />
           <Route path="home" element={<Home />} />
           <Route path="user-info" element={<UserInfo />} />
         </Route>
