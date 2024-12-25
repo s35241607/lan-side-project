@@ -1,82 +1,40 @@
-import { HomeOutlined, UserOutlined } from "@ant-design/icons";
 import { Breadcrumb } from "antd";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { HomeOutlined } from "@ant-design/icons";
+
+// Record用法:key類型,value類型
+const breadcrumbMap: Record<string, string | JSX.Element> = {
+  "/layout": <HomeOutlined />,
+  "/layout/home": "首頁",
+  "/layout/user-info": "個人資訊",
+};
 
 const BreadCrumb = () => {
   const location = useLocation();
-  const navigate = useNavigate();
 
-  const BreadcrumbItems = [
-    {
-      title: (
-        <>
-          <HomeOutlined />
-          <span>首頁</span>
-        </>
-      ),
-      className:
-        "cursor-pointer hover:bg-gray-300 px-2 py-1 rounded transition-colors",
-      onClick: () => navigate("/layout/home"),
-      path: "/layout/home",
-    },
-    {
-      title: (
-        <>
-          <UserOutlined />
-          <span>個人資訊</span>
-        </>
-      ),
-      className:
-        "cursor-pointer hover:bg-gray-300 px-2 py-1 rounded transition-colors",
-      onClick: () => navigate("/layout/userInfo"),
-      path: "/layout/userInfo",
-    },
-  ];
+  // 將路徑分割成階層
+  const pathSnippets = location.pathname.split("/").filter((i) => i);
 
-  const items = [];
-  if (location.pathname === "/layout/home") {
-    items.push({
-      key: "home",
-      title: (
-        <span
-          className={BreadcrumbItems[0].className}
-          onClick={BreadcrumbItems[0].onClick}
-        >
-          {BreadcrumbItems[0].title}
-        </span>
+  // 生成麵包屑數據
+  const breadcrumbItems = pathSnippets.map((_, index) => {
+    const url = `/${pathSnippets.slice(0, index + 1).join("/")}`;
+
+    // 最後一個項目不要用Link，才能帶出內建的黑字體
+    const lastItem = index === pathSnippets.length - 1;
+    return {
+      key: url,
+      title: lastItem ? (
+        breadcrumbMap[url]
+      ) : (
+        <Link to={url}>{breadcrumbMap[url]}</Link>
       ),
-    });
-  } else if (location.pathname === "/layout/userInfo") {
-    items.push(
-      {
-        key: "home",
-        title: (
-          <span
-            className={BreadcrumbItems[0].className}
-            onClick={BreadcrumbItems[0].onClick}
-          >
-            {BreadcrumbItems[0].title}
-          </span>
-        ),
-      },
-      {
-        key: "userInfo",
-        title: (
-          <span
-            className="cursor-pointer hover:bg-gray-300 px-2 py-1 rounded transition-colors"
-            onClick={BreadcrumbItems[1].onClick}
-          >
-            {BreadcrumbItems[1].title}
-          </span>
-        ),
-      }
-    );
-  }
+    };
+  });
 
   return (
-    <>
-      <Breadcrumb items={items} className="mb-2" />
-    </>
+    <div>
+      <Breadcrumb items={breadcrumbItems} />
+    </div>
   );
 };
 
