@@ -33,7 +33,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ setShowForgot }) => {
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
             requiredMark={false}
-            className="border border-slate-300 rounded-md bg-slate-100 p-6"
+            className="border border-slate-300 rounded-md bg-slate-100 p-6 max-w-md"
           >
             <div className="flex justify-center text-2xl mb-4 font-bold">
               忘記密碼?
