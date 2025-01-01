@@ -25,13 +25,13 @@ const ResetPasswordPage: React.FC = () => {
       return;
     }
 
-    const token = getCookie("token");
+    const token = getCookie("token"); // 不同的token?
+
     if (token) {
       fetchResetPassword({
         token,
         newPassword: values.password,
       });
-      message.success("重設密碼成功");
     } else {
       message.error("發生錯誤，查無token");
     }
@@ -54,7 +54,7 @@ const ResetPasswordPage: React.FC = () => {
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
             requiredMark={false}
-            className="border border-slate-300 rounded-md bg-slate-100 p-6"
+            className="border border-slate-300 rounded-md bg-slate-100 p-6 max-w-md"
           >
             <div className="flex justify-center text-2xl mb-4 font-bold">
               重設密碼

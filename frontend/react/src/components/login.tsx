@@ -7,7 +7,6 @@ import {
   GithubFilled,
   FacebookFilled,
 } from "@ant-design/icons";
-// import { LoginProps } from "../types/props";
 import { LoginRequest } from "../types/Api";
 import { useNavigate } from "react-router-dom";
 import { useGetLogin } from "../hooks/useGetLogin";
@@ -42,7 +41,7 @@ const LoginForm: React.FC<LoginProps> = ({ setShowForgot }) => {
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           requiredMark={false}
-          className="border border-slate-300 rounded-md bg-slate-100 p-6"
+          className="border border-slate-300 rounded-md bg-slate-100 p-6 max-w-md"
         >
           <div className="flex justify-center font-bold text-2xl my-2">
             會員登入

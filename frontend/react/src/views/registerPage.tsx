@@ -31,7 +31,7 @@ const RegisterPage: React.FC = () => {
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           requiredMark={false}
-          className="border border-slate-300 rounded-md bg-slate-100 p-6"
+          className="border border-slate-300 rounded-md bg-slate-100 p-6 max-w-md"
         >
           <div className="flex justify-center font-bold text-2xl my-2">
             會員註冊

@@ -11,8 +11,8 @@ export const useGetForgotPassword = () => {
         email: data.email,
       });
       if (res.data) {
-        console.log("寄mail成功", res.data);
-        message.success("寄mail成功");
+        console.log("重設密碼成功", res.data);
+        message.success("重設密碼成功");
         // navigate("/login");
       }
     } catch (e: any) {
