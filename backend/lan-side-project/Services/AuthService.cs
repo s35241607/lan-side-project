@@ -46,14 +46,14 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailS
                 user.LoginLockoutEnd = DateTime.UtcNow.AddMinutes(_lockoutDurationMinutes);
             }
 
-            await userRepository.UpdateUserAsync(user);
+            await userRepository.UpdateAsync(user);
             return Error.Unauthorized("InvalidPassword", "The provided password is incorrect.");
         }
 
         // 清除登入失敗次數 & 更新最後登入時間
         user.LoginFailedAttempts = 0;
         user.LastLoginDate = DateTime.UtcNow;
-        await userRepository.UpdateUserAsync(user);
+        await userRepository.UpdateAsync(user);
 
         var response = new LoginResponse
         {
@@ -93,7 +93,7 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailS
         };
 
         // 儲存使用者
-        await userRepository.AddUserAsync(user);
+        await userRepository.AddAsync(user);
 
         // 生成登入回應
         var response = new LoginResponse
@@ -108,7 +108,7 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailS
 
     public async Task<ErrorOr<ApiResponse>> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
     {
-        var user = await userRepository.GetUserByIdAsync(changePasswordRequest.UserId);
+        var user = await userRepository.GetByIdAsync(changePasswordRequest.UserId);
         if (user == null)
         {
             return Error.NotFound("UserNotFound", "The provided user does not exist.");
@@ -121,7 +121,7 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailS
 
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(changePasswordRequest.NewPassword);
         user.PasswordHash = hashedPassword;
-        await userRepository.UpdateUserAsync(user);
+        await userRepository.UpdateAsync(user);
 
         return ApiResponse.Success("Password changed successfully.");
     }
@@ -142,7 +142,7 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailS
         user.ResetPasswordToken = token;
         user.ResetPasswordTokenExpiration = DateTime.UtcNow.AddMinutes(_resetPasswordTokenExpirationMinutes);
 
-        await userRepository.UpdateUserAsync(user);
+        await userRepository.UpdateAsync(user);
 
         // 發送修改密碼連結給使用者
         var resetLink = $"{config.GetValue<string>("FRONTEND_BASE_URL")}/reset-password?userId={user.Id}&token={token}";
@@ -156,7 +156,7 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailS
 
     public async Task<ErrorOr<ApiResponse>> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
     {
-        var user = await userRepository.GetUserByIdAsync(resetPasswordRequest.UserId);
+        var user = await userRepository.GetByIdAsync(resetPasswordRequest.UserId);
 
         if (user == null)
         {
@@ -181,7 +181,7 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailS
                 user.ResetPasswordLockoutEnd = DateTime.UtcNow.AddMinutes(_lockoutDurationMinutes);
             }
 
-            await userRepository.UpdateUserAsync(user);
+            await userRepository.UpdateAsync(user);
             return Error.Unauthorized("UserResetTokenInvalid", "The provided token is invalid or has expired.");
         }
 
@@ -193,7 +193,7 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailS
         user.ResetPasswordToken = null;
         user.ResetPasswordFailedAttempts = 0;
 
-        await userRepository.UpdateUserAsync(user);
+        await userRepository.UpdateAsync(user);
 
         return ApiResponse.Success("Password reseted successfully.");
     }
@@ -227,7 +227,7 @@ public class AuthService(UserRepository userRepository, JwtUtils jwtUtils, MailS
                 Email = email,
                 PasswordHash = "",  // Google 登入不需要密碼
             };
-            await userRepository.AddUserAsync(user);
+            await userRepository.AddAsync(user);
         }
 
         // 3. 生成 JWT Token 並返回

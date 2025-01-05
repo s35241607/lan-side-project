@@ -52,11 +52,15 @@ public class Program
 
             // 註冊 Repository
             builder.Services.AddScoped<UserRepository>();
+            builder.Services.AddScoped<RoleRepository>();
 
             // 註冊 Service
             builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<UserImageService>();
+            builder.Services.AddScoped<RoleService>();
+            
+
             builder.Services.AddSingleton<MailService>();
 
             // 註冊 Utils
