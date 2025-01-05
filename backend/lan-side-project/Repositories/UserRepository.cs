@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace lan_side_project.Repositories;
 
-public class UserRepository(AppDbContext db)
+    public class UserRepository(AppDbContext db) : GenericRepository<User>(db)
 {
     // 根據 Username 查詢使用者
     public async Task<User?> GetUserByUsernameAsync(string username)
@@ -32,59 +32,59 @@ public class UserRepository(AppDbContext db)
             .FirstOrDefaultAsync();
     }
 
-    // 根據 ID 查詢使用者
-    public async Task<User?> GetUserByIdAsync(int id)
-    {
-        return await db.Users
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == id);
-    }
+    //// 取得所有使用者
+    //public async Task<List<User>> GetAllUsersAsync()
+    //{
+    //    return await db.Users
+    //        .AsNoTracking()
+    //        .ToListAsync();
+    //}
 
-    // 新增使用者
-    public async Task AddUserAsync(User user)
-    {
-        await db.Users.AddAsync(user);
-        await db.SaveChangesAsync();
-    }
+    //// 根據 ID 查詢使用者
+    //public async Task<User?> GetUserByIdAsync(int id)
+    //{
+    //    return await db.Users
+    //        .AsNoTracking()
+    //        .FirstOrDefaultAsync(u => u.Id == id);
+    //}
 
-    // 更新使用者資料
-    public async Task UpdateUserAsync(User user)
-    {
-        var existingUser = await db.Users.FindAsync(user.Id);
+    //// 新增使用者
+    //public async Task AddUserAsync(User user)
+    //{
+    //    await db.Users.AddAsync(user);
+    //    await db.SaveChangesAsync();
+    //}
 
-        if (existingUser != null)
-        {
-            MapperUtils.Mapper.Map(user, existingUser);
-            db.Users.Update(existingUser);
-            await db.SaveChangesAsync();
-        }
-    }
+    //// 更新使用者資料
+    //public async Task UpdateUserAsync(User user)
+    //{
+    //    var existingUser = await db.Users.FindAsync(user.Id);
 
-    // 刪除使用者
-    public async Task DeleteUserAsync(int userId)
-    {
-        var user = await db.Users.FindAsync(userId);
+    //    if (existingUser != null)
+    //    {
+    //        MapperUtils.Mapper.Map(user, existingUser);
+    //        db.Users.Update(existingUser);
+    //        await db.SaveChangesAsync();
+    //    }
+    //}
 
-        if (user == null)
-            return;
+    //// 刪除使用者
+    //public async Task DeleteUserAsync(int userId)
+    //{
+    //    var user = await db.Users.FindAsync(userId);
 
-        db.Users.Remove(user);
-        await db.SaveChangesAsync();
+    //    if (user == null)
+    //        return;
 
-    }
+    //    db.Users.Remove(user);
+    //    await db.SaveChangesAsync();
+
+    //}
 
     // 確認使用者是否存在
     public async Task<bool> IsUserExistsAsync(string username)
     {
         return await db.Users.AnyAsync(user => user.Username == username);
-    }
-
-    // 取得所有使用者
-    public async Task<List<User>> GetAllUsersAsync()
-    {
-        return await db.Users
-            .AsNoTracking()
-            .ToListAsync();
     }
 
     // 分頁查詢使用者

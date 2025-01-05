@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using lan_side_project.DTOs.Requests.Role;
+using lan_side_project.DTOs.Responses.Role;
 using lan_side_project.DTOs.Responses.User;
 using lan_side_project.Models;
 
@@ -17,6 +19,10 @@ public static class MapperUtils
             // 定義所有需要的映射配置
             cfg.CreateMap<User, User>();
             cfg.CreateMap<User, UserResponse>();
+            cfg.CreateMap<Role, Role>();
+            cfg.CreateMap<Role, RoleResponse>();
+            cfg.CreateMap<CreateRoleRequest, Role>();
+            cfg.CreateMap<UpdateRoleRequest, Role>();
         });
 
         _mapper = config.CreateMapper();

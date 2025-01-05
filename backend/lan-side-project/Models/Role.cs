@@ -1,5 +1,9 @@
-﻿namespace lan_side_project.Models;
+﻿using Microsoft.EntityFrameworkCore;
 
+namespace lan_side_project.Models;
+
+
+[Index(nameof(Name), IsUnique = true)]
 public class Role : AuditBase
 {
     public int Id { get; set; }

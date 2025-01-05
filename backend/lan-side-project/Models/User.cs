@@ -1,5 +1,9 @@
-﻿namespace lan_side_project.Models;
+﻿using Microsoft.EntityFrameworkCore;
 
+namespace lan_side_project.Models;
+
+[Index(nameof(Username), IsUnique = true)]
+[Index(nameof(Email), IsUnique = true)]
 public class User : AuditBase
 {
     public int Id { get; set; }
