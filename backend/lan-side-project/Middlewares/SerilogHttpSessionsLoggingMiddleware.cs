@@ -79,7 +79,7 @@ public static class SerilogHttpSessionsLoggingMiddleware
             diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
             diagnosticContext.Set("UserID", httpContext.User.Identity?.Name);
             diagnosticContext.Set("ClientIP", httpContext.Connection.RemoteIpAddress?.ToString());
-            diagnosticContext.Set("UserAgent", httpContext.Request.Headers["User-Agent"].FirstOrDefault());
+            diagnosticContext.Set("UserAgent", httpContext.Request.Headers.UserAgent.FirstOrDefault());
 
             const string headersSeparator = ", ";
             if (settings.HasFlag(HttpSessionInfoToLog.QueryString))
