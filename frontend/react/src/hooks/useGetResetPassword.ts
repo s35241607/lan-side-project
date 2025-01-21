@@ -7,8 +7,8 @@ export const useGetResetPassword = () => {
     try {
       const res = await baseApi.resetPassword(data);
       if (res.data) {
-        console.log("寄mail成功", res.data);
-        message.success("寄mail成功");
+        console.log("重設密碼res", res.data);
+        message.success("重設密碼成功");
         // navigate("/login");
       }
     } catch (e: any) {

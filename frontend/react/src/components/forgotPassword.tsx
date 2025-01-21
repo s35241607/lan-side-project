@@ -1,6 +1,6 @@
 import React from "react";
 import { Row, Col, Form, Input, Button, message } from "antd";
-import { MailOutlined } from "@ant-design/icons";
+import { MailOutlined, LoadingOutlined } from "@ant-design/icons";
 import { useGetForgotPassword } from "../hooks/useGetForgotPassword";
 
 interface ForgotPasswordProps {
@@ -10,7 +10,7 @@ interface ForgotPasswordProps {
 const ForgotPassword: React.FC<ForgotPasswordProps> = ({ setShowForgot }) => {
   const [form] = Form.useForm();
 
-  const { fetchForgotPassword } = useGetForgotPassword();
+  const { fetchForgotPassword, loading } = useGetForgotPassword();
   const onFinish = (values: { email: string }) => {
     fetchForgotPassword(values);
     console.log("您輸入的email為", values.email);
@@ -55,7 +55,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ setShowForgot }) => {
 
             <Form.Item>
               <Button type="primary" htmlType="submit" block>
-                發送
+                發送 {loading && <LoadingOutlined spin />}
               </Button>
             </Form.Item>
 
