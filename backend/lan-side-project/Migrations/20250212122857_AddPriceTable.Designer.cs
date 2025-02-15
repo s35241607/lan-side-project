@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using lan_side_project.Data;
@@ -11,9 +12,11 @@ using lan_side_project.Data;
 namespace lan_side_project.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250212122857_AddPriceTable")]
+    partial class AddPriceTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -96,70 +99,6 @@ namespace lan_side_project.Migrations
                         .IsUnique();
 
                     b.ToTable("permissions");
-                });
-
-            modelBuilder.Entity("lan_side_project.Models.PriceTable", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("integer")
-                        .HasColumnName("created_by");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("integer")
-                        .HasColumnName("updated_by");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("price_tables");
-                });
-
-            modelBuilder.Entity("lan_side_project.Models.PriceTableItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("description");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric")
-                        .HasColumnName("price");
-
-                    b.Property<int>("PriceTableId")
-                        .HasColumnType("integer")
-                        .HasColumnName("price_table_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PriceTableId");
-
-                    b.ToTable("price_table_items");
                 });
 
             modelBuilder.Entity("lan_side_project.Models.Role", b =>
@@ -319,22 +258,6 @@ namespace lan_side_project.Migrations
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("lan_side_project.Models.PriceTableItem", b =>
-                {
-                    b.HasOne("lan_side_project.Models.PriceTable", "PriceTable")
-                        .WithMany("PriceTableItems")
-                        .HasForeignKey("PriceTableId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PriceTable");
-                });
-
-            modelBuilder.Entity("lan_side_project.Models.PriceTable", b =>
-                {
-                    b.Navigation("PriceTableItems");
                 });
 #pragma warning restore 612, 618
         }

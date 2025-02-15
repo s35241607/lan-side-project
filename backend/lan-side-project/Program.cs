@@ -116,6 +116,10 @@ public class Program
             builder.Services.AddEndpointsApiExplorer();
             // 註冊控制器並修改模型驗證失敗時的行為
             builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+                })
                 .ConfigureApiBehaviorOptions(options =>
                 {
                     options.InvalidModelStateResponseFactory = context =>

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using lan_side_project.Data;
@@ -11,9 +12,11 @@ using lan_side_project.Data;
 namespace lan_side_project.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250212123333_AddPriceTable2")]
+    partial class AddPriceTable2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -324,17 +327,12 @@ namespace lan_side_project.Migrations
             modelBuilder.Entity("lan_side_project.Models.PriceTableItem", b =>
                 {
                     b.HasOne("lan_side_project.Models.PriceTable", "PriceTable")
-                        .WithMany("PriceTableItems")
+                        .WithMany()
                         .HasForeignKey("PriceTableId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("PriceTable");
-                });
-
-            modelBuilder.Entity("lan_side_project.Models.PriceTable", b =>
-                {
-                    b.Navigation("PriceTableItems");
                 });
 #pragma warning restore 612, 618
         }
