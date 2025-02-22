@@ -1,5 +1,7 @@
 ﻿using lan_side_project.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using System.Linq;
 
 namespace lan_side_project.Repositories;
 
@@ -12,6 +14,53 @@ public abstract class GenericRepository<T> : IGenericRepository<T> where T : cla
     {
         _dbContext = dbContext;
         _dbSet = _dbContext.Set<T>();
+    }
+
+    public async Task<IEnumerable<T>> GetAsync(
+        Expression<Func<T, bool>>? filter = null,
+        Func<IQueryable<T>, IQueryable<T>>? include = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+        int? skip = null,
+        int? take = null,
+        bool asNoTracking = false)
+    {
+        IQueryable<T> query = _dbSet;
+
+        // 應用過濾條件
+        if (filter != null)
+        {
+            query = query.Where(filter);
+        }
+
+        // 應用相關資料 Include
+        if (include != null)
+        {
+            query = include(query);
+        }
+
+        // 應用排序
+        if (orderBy != null)
+        {
+            query = orderBy(query);
+        }
+
+        // 應用分頁
+        if (skip.HasValue)
+        {
+            query = query.Skip(skip.Value);
+        }
+        if (take.HasValue)
+        {
+            query = query.Take(take.Value);
+        }
+
+        // 是否使用 NoTracking
+        if (asNoTracking)
+        {
+            query = query.AsNoTracking();
+        }
+
+        return await query.ToListAsync();
     }
 
     /// <summary>
