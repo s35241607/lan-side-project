@@ -30,7 +30,7 @@ public class RoleController(RoleService roleService) : BaseController
 
     [HttpPut("{id}")]
     public async Task<ActionResult<RoleResponse>> UpdateAsync(int id, UpdateRoleRequest updateRoleRequest)
-        => ErrorOrOk(await roleService.UpdateAsync(updateRoleRequest));
+        => ErrorOrOk(await roleService.UpdateAsync(id, updateRoleRequest));
 
 
     [HttpDelete("{id}")]

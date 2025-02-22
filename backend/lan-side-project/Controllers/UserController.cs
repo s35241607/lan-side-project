@@ -39,6 +39,13 @@ public class UserController(UserService userService, IUserContext userContext) :
         return ErrorOrOk(result);
     }
 
+    [HttpGet("/username/{username}")]
+    public async Task<ActionResult<UserResponse>> GetUserByUsernameAsync(string username)
+    {
+        var result = await userService.GetUserByUsernameAsync(username);
+        return ErrorOrOk(result);
+    }
+
     /// <summary>
     /// 取得當前使用者資訊
     /// </summary>

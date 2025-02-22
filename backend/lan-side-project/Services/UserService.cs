@@ -21,4 +21,11 @@ public class UserService(UserRepository userRepository)
 
         return MapperUtils.Mapper.Map<UserResponse>(user);
     }
+
+    public async Task<ErrorOr<UserResponse>> GetUserByUsernameAsync(string username)
+    {
+        var user = await userRepository.GetByUsernameOrEmailAsync(username);
+
+        return MapperUtils.Mapper.Map<UserResponse>(user);
+    }
 }

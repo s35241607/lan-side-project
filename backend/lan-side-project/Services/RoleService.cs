@@ -5,6 +5,7 @@ using lan_side_project.DTOs.Responses.Role;
 using lan_side_project.Models;
 using lan_side_project.Repositories;
 using lan_side_project.Utils;
+using System.Reflection.Metadata.Ecma335;
 
 namespace lan_side_project.Services;
 
@@ -21,7 +22,7 @@ public class RoleService(RoleRepository roleRepository)
         var role = await roleRepository.GetByIdAsync(id);
         return MapperUtils.Mapper.Map<RoleResponse>(role);
     }
-    
+
     public async Task<ErrorOr<RoleResponse>> CreateAsync(CreateRoleRequest createRoleRequest)
     {
         // 確認角色名稱是否已存在
@@ -34,10 +35,24 @@ public class RoleService(RoleRepository roleRepository)
         await roleRepository.AddAsync(role);
         return MapperUtils.Mapper.Map<RoleResponse>(role);
     }
-    
-    public async Task<ErrorOr<RoleResponse>> UpdateAsync(UpdateRoleRequest updateRoleRequest)
+
+    public async Task<ErrorOr<RoleResponse>> UpdateAsync(int id, UpdateRoleRequest updateRoleRequest)
     {
-        var role = MapperUtils.Mapper.Map<Role>(updateRoleRequest);
+        // 確認角色名稱是否已存在
+        if (await roleRepository.IsRoleExistsAsync(updateRoleRequest.Name))
+        {
+            return Error.Conflict("RoleNameAlreadyExists", "A role with the same name already exists.");
+        }
+
+        var role = await roleRepository.GetByIdAsync(id);
+
+        // 確認角色ID是否存在
+        if (role is null)
+            return Error.NotFound("RoleIdIsNotExists", $"A role id with {id} is not exists.");
+
+        MapperUtils.Mapper.Map(role, updateRoleRequest);
+
+
         await roleRepository.UpdateAsync(role);
         return MapperUtils.Mapper.Map<RoleResponse>(role);
     }
