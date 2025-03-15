@@ -30,6 +30,17 @@ public class Program
             Log.Information("Starting web host");
             var builder = WebApplication.CreateBuilder(args);
 
+            // 設置 CORS 策略，允許所有來源
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()  // 允許任何來源
+                          .AllowAnyHeader()  // 允許任何標頭
+                          .AllowAnyMethod(); // 允許任何 HTTP 方法
+                });
+            });
+
             builder.Configuration
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -53,13 +64,15 @@ public class Program
             // 註冊 Repository
             builder.Services.AddScoped<UserRepository>();
             builder.Services.AddScoped<RoleRepository>();
+            builder.Services.AddScoped<PermissionRepository>();
 
             // 註冊 Service
             builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<UserImageService>();
             builder.Services.AddScoped<RoleService>();
-            
+            builder.Services.AddScoped<PermissionService>();
+
 
             builder.Services.AddSingleton<MailService>();
 
@@ -140,6 +153,9 @@ public class Program
             });
 
             var app = builder.Build();
+
+            // 使用 CORS 策略
+            app.UseCors("AllowAll");
 
             try
             {
