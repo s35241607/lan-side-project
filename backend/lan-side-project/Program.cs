@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using StackExchange.Redis;
 using System.Reflection;
 using System.Text;
 
@@ -54,7 +55,21 @@ public class Program
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
             
-            
+            // 註冊 Redis 快取
+            var redisConfig = builder.Configuration.GetSection("Redis");
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisConfig.GetValue<string>("Configuration");
+                options.InstanceName = redisConfig.GetValue<string>("InstanceName");
+            });
+
+            // 註冊 KeyDB 的連線 Multiplexer
+            builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+            {
+                return ConnectionMultiplexer.Connect(redisConfig.GetValue<string>("Configuration")!);
+            });
+
+
             // 新增 HttpContextAccessor 以便在服務中訪問 HTTP 上下文
             builder.Services.AddHttpContextAccessor();
 
