@@ -7,30 +7,76 @@ using lan_side_project.Models;
 using lan_side_project.Repositories;
 using lan_side_project.Utils;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
+using System.Text.Json;
 
 namespace lan_side_project.Services;
 
-public class UserService(UserRepository userRepository)
+public class UserService(UserRepository userRepository, IConnectionMultiplexer connectionMultiplexer)
 {
+    private readonly IDatabase _cache = connectionMultiplexer.GetDatabase();
+    private const int CacheDurationInMinutes = 5;
     public async Task<ErrorOr<List<UserResponse>>> GetAllUsersAsync()
     {
-        var users = await userRepository.GetAsync(include: q => q.Include(p => p.Roles));
+        const string cacheKey = "GetAllUsers";
+        var cachedUsers = await _cache.StringGetAsync(cacheKey);
 
-        return MapperUtils.Mapper.Map<List<UserResponse>>(users);
+        if (cachedUsers.IsNullOrEmpty)
+        {
+            var users = await userRepository.GetAsync(include: q => q.Include(p => p.Roles));
+            var userResponses = MapperUtils.Mapper.Map<List<UserResponse>>(users);
+
+            var serializedUsers = JsonSerializer.Serialize(userResponses);
+            await _cache.StringSetAsync(cacheKey, serializedUsers, TimeSpan.FromMinutes(CacheDurationInMinutes));
+
+            return userResponses;
+        }
+
+        return JsonSerializer.Deserialize<List<UserResponse>>(cachedUsers);
     }
 
     public async Task<ErrorOr<UserResponse>> GetUserByIdAsync(int id)
     {
-        var user = await userRepository.GetByIdAsync(id);
+        var cacheKey = $"GetUserById_{id}";
+        var cachedUser = await _cache.StringGetAsync(cacheKey);
 
-        return MapperUtils.Mapper.Map<UserResponse>(user);
+        if (cachedUser.IsNullOrEmpty)
+        {
+            var user = await userRepository.GetByIdAsync(id);
+            var userResponse = MapperUtils.Mapper.Map<UserResponse>(user);
+
+            if (userResponse != null)
+            {
+                var serializedUser = JsonSerializer.Serialize(userResponse);
+                await _cache.StringSetAsync(cacheKey, serializedUser, TimeSpan.FromMinutes(CacheDurationInMinutes));
+            }
+
+            return userResponse;
+        }
+
+        return JsonSerializer.Deserialize<UserResponse>(cachedUser);
     }
 
     public async Task<ErrorOr<UserResponse>> GetUserByUsernameAsync(string username)
     {
-        var user = await userRepository.GetByUsernameOrEmailAsync(username);
+        var cacheKey = $"GetUserByUsername_{username}";
+        var cachedUser = await _cache.StringGetAsync(cacheKey);
 
-        return MapperUtils.Mapper.Map<UserResponse>(user);
+        if (cachedUser.IsNullOrEmpty)
+        {
+            var user = await userRepository.GetByUsernameOrEmailAsync(username);
+            var userResponse = MapperUtils.Mapper.Map<UserResponse>(user);
+
+            if (userResponse != null)
+            {
+                var serializedUser = JsonSerializer.Serialize(userResponse);
+                await _cache.StringSetAsync(cacheKey, serializedUser, TimeSpan.FromMinutes(CacheDurationInMinutes));
+            }
+
+            return userResponse;
+        }
+
+        return JsonSerializer.Deserialize<UserResponse>(cachedUser);
     }
 
     public async Task<ErrorOr<UserResponse>> CreateUserAsync(CreateUserRequest createUserRequest)
