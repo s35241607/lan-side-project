@@ -6,6 +6,7 @@ using lan_side_project.Models;
 using lan_side_project.Repositories;
 using lan_side_project.Utils;
 using System.Reflection.Metadata.Ecma335;
+using Error = ErrorOr.Error;
 
 namespace lan_side_project.Services;
 

@@ -1,5 +1,7 @@
 ﻿using ErrorOr;
 using lan_side_project.DTOs.Responses;
+using Error = ErrorOr.Error;
+using Path = System.IO.Path;
 
 namespace lan_side_project.Services;
 

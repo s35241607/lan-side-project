@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using System.Security.Cryptography;
+using Error = ErrorOr.Error;
 
 namespace lan_side_project.Services;
 

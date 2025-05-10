@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using ErrorOr;
-using lan_side_project.DTOs.Requests.Auth;
+﻿using ErrorOr;
 using lan_side_project.DTOs.Requests.Auth.User;
 using lan_side_project.DTOs.Responses.User;
 using lan_side_project.Models;
@@ -9,6 +7,7 @@ using lan_side_project.Utils;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using System.Text.Json;
+using Error = ErrorOr.Error;
 
 namespace lan_side_project.Services;
 

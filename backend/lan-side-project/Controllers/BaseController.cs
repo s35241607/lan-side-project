@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Newtonsoft.Json.Linq;
+using Error = ErrorOr.Error;
 
 namespace lan_side_project.Controllers;
 public abstract class BaseController : ControllerBase

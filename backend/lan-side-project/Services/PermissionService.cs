@@ -7,6 +7,7 @@ using lan_side_project.Repositories;
 using lan_side_project.Utils;
 using lan_side_project.DTOs.Responses.Permission;
 using lan_side_project.DTOs.Requests.Permission;
+using Error = ErrorOr.Error;
 
 namespace lan_side_project.Services;
 
