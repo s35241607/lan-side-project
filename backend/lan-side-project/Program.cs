@@ -2,6 +2,7 @@
 using lan_side_project.Common;
 using lan_side_project.Data;
 using lan_side_project.DTOs.Responses;
+using lan_side_project.GraphQL.Queries;
 using lan_side_project.Middlewares;
 using lan_side_project.Repositories;
 using lan_side_project.Services;
@@ -54,7 +55,7 @@ public class Program
             // 配置 EF Core 與 PostgreSQL
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-            
+
             // 註冊 Redis 快取
             var redisConfig = builder.Configuration.GetSection("Redis");
             builder.Services.AddStackExchangeRedisCache(options =>
@@ -93,6 +94,14 @@ public class Program
 
             // 註冊 Utils
             builder.Services.AddSingleton<JwtUtils>();
+
+            builder.Services
+                .AddGraphQLServer()
+                .AddQueryType(d => d.Name("Query"))
+                .AddType<UserQuery>()
+                .AddProjections()
+                .AddFiltering()
+                .AddSorting();
 
 
 
@@ -171,6 +180,8 @@ public class Program
 
             // 使用 CORS 策略
             app.UseCors("AllowAll");
+
+            app.MapGraphQL("/graphql");
 
             try
             {
